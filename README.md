@@ -1,2 +1,2 @@
-# playwright-reportportal-integration
-ReportPortal agent for the Playwright test framework
+# testcafe-reportportal-integration
+ReportPortal agent for the TestCafe test framework
