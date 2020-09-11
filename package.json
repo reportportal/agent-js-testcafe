@@ -4,7 +4,32 @@
   "description": "Agent for integration TestCafe with ReportPortal.",
   "main": "index.js",
   "scripts": {
-    "test": "exit 0"
+    "build": "npm run clean && tsc",
+    "clean": "rimraf ./build",
+    "lint": "eslint \"src/**/*.ts\"",
+    "format": "npm run lint -- --fix",
+    "test": "exit 0",
+    "test:coverage": "exit 0"
+  },
+  "dependencies": {
+    "@reportportal/client-javascript": "^5.0.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.2.1",
+    "@typescript-eslint/eslint-plugin": "^2.21.0",
+    "@typescript-eslint/parser": "^2.21.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-airbnb-typescript": "^7.0.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "jest": "^25.3.0",
+    "prettier": "^1.19.1",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^25.3.1",
+    "typescript": "^3.8.3"
   },
   "repository": {
     "type": "git",
