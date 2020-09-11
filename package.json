@@ -1,0 +1,30 @@
+{
+  "name": "@reportportal/agent-js-testcafe",
+  "version": "5.0.0",
+  "description": "Agent for integration TestCafe with ReportPortal.",
+  "main": "index.js",
+  "scripts": {
+    "test": "exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AmsterGet/testcafe-reportportal-integration.git"
+  },
+  "author": "ReportPortal.io",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/AmsterGet/testcafe-reportportal-integration/issues"
+  },
+  "homepage": "https://github.com/AmsterGet/testcafe-reportportal-integration#readme",
+  "engines": {
+    "node": ">= 8.0.x"
+  },
+  "keywords": [
+    "epam",
+    "reports",
+    "portal",
+    "testcafe",
+    "reporters",
+    "reportportal"
+  ]
+}
