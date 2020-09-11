@@ -1,2 +1,2 @@
-# testcafe-reportportal-integration
-ReportPortal agent for the TestCafe test framework.
+# @reportportal/agent-js-testcafe
+Agent for integration TestCafe with ReportPortal.

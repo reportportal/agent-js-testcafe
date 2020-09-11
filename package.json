@@ -9,7 +9,8 @@
     "lint": "eslint \"src/**/*.ts\"",
     "format": "npm run lint -- --fix",
     "test": "exit 0",
-    "test:coverage": "exit 0"
+    "test:coverage": "exit 0",
+    "example": "cd examples && npm run test"
   },
   "dependencies": {
     "@reportportal/client-javascript": "^5.0.2"
