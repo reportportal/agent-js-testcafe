@@ -15,18 +15,7 @@
  *
  */
 
-import { Reporter } from './reporter';
-import { ReportPortalConfig } from './models';
-
-function configureReporter(config: ReportPortalConfig) {
-
-  function getReporter(): Reporter {
-    const reporter = new Reporter(config);
-
-    return reporter;
-  }
-
-  return getReporter;
+export enum LAUNCH_MODES {
+    DEFAULT = 'DEFAULT',
+    DEBUG = 'DEBUG',
 }
-
-export = configureReporter;

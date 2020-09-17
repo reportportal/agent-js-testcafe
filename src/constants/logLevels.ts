@@ -15,18 +15,11 @@
  *
  */
 
-import { Reporter } from './reporter';
-import { ReportPortalConfig } from './models';
-
-function configureReporter(config: ReportPortalConfig) {
-
-  function getReporter(): Reporter {
-    const reporter = new Reporter(config);
-
-    return reporter;
-  }
-
-  return getReporter;
+export enum LOG_LEVELS {
+    TRACE = 'TRACE',
+    DEBUG = 'DEBUG',
+    WARN = 'WARN',
+    INFO = 'INFO',
+    ERROR = 'ERROR',
+    FATAL = 'FATAL',
 }
-
-export = configureReporter;

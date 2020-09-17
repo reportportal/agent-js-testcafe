@@ -15,18 +15,19 @@
  *
  */
 
-import { Reporter } from './reporter';
-import { ReportPortalConfig } from './models';
+const createTestCafe = require('testcafe');
+const configureReporter = require('@reportportal/agent-js-testcafe');
+const rpConfig = require('./rp.json');
 
-function configureReporter(config: ReportPortalConfig) {
+async function start() {
+    const testcafe = await createTestCafe('localhost', 1337, 1338);
+    const runner = testcafe.createRunner();
 
-  function getReporter(): Reporter {
-    const reporter = new Reporter(config);
+    await runner
+        .reporter(configureReporter(rpConfig))
+        .run();
 
-    return reporter;
-  }
-
-  return getReporter;
+    await testcafe.close();
 }
 
-export = configureReporter;
+start();
