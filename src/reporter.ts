@@ -42,7 +42,7 @@ export class Reporter {
       description: this.config.description,
       startTime: new Date(startTime).valueOf(),
     };
-    const startLaunchObj: StartLaunchRQ = getStartLaunchObj(launchObj);
+    const startLaunchObj: StartLaunchRQ = getStartLaunchObj(launchObj, this.config);
 
     this.launchId = this.client.startLaunch(startLaunchObj).tempId;
   }
