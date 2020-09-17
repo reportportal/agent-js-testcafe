@@ -37,12 +37,7 @@ export class Reporter {
 
   reportTaskStart(startTime: number, userAgents: any, testCount: number) {
     this.startTime = startTime;
-    const launchObj = {
-      attributes: this.config.attributes,
-      description: this.config.description,
-      startTime: new Date(startTime).valueOf(),
-    };
-    const startLaunchObj: StartLaunchRQ = getStartLaunchObj(launchObj, this.config);
+    const startLaunchObj: StartLaunchRQ = getStartLaunchObj({ startTime }, this.config);
 
     this.launchId = this.client.startLaunch(startLaunchObj).tempId;
   }
