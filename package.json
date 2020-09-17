@@ -1,8 +1,8 @@
 {
-  "name": "@reportportal/agent-js-testcafe",
+  "name": "testcafe-reporter-my-reporter",
   "version": "5.0.0",
   "description": "Agent for integration TestCafe with ReportPortal.",
-  "main": "index.js",
+  "main": "build/index.js",
   "scripts": {
     "build": "npm run clean && tsc",
     "clean": "rimraf ./build",
@@ -10,6 +10,7 @@
     "format": "npm run lint -- --fix",
     "test": "exit 0",
     "test:coverage": "exit 0",
+    "link": "npm link && cd examples && npm link testcafe-reporter-my-reporter",
     "example": "cd examples && npm run test"
   },
   "dependencies": {
