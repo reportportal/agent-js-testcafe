@@ -1,6 +1,6 @@
 {
   "browsers": "chrome",
-  "src": "./tests/**/*.ts",
+  "src": "./tests/**/*.js",
   "screenshots": {
     "path": "./screenshots/"
   },
