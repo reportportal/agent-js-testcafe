@@ -15,18 +15,10 @@
  *
  */
 
-import { Reporter } from './reporter';
-import { ReportPortalConfig } from './models';
-
-function configureReporter(config: ReportPortalConfig) {
-
-  function getReporter(): Reporter {
-    const reporter = new Reporter(config);
-
-    return reporter;
-  }
-
-  return getReporter;
+export interface ScreenshotDataInterface {
+  value: string;
+  sessionId: string;
+  status: string;
 }
 
-export = configureReporter;
+export type screenshotCallbackType = ((data: ScreenshotDataInterface) => void) | undefined;

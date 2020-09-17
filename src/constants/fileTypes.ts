@@ -15,18 +15,16 @@
  *
  */
 
-import { Reporter } from './reporter';
-import { ReportPortalConfig } from './models';
-
-function configureReporter(config: ReportPortalConfig) {
-
-  function getReporter(): Reporter {
-    const reporter = new Reporter(config);
-
-    return reporter;
-  }
-
-  return getReporter;
+export enum FILE_TYPES {
+    XML = 'application/xml',
+    HTML = 'application/html',
+    JAVASCRIPT = 'application/javascript',
+    JSON = 'application/json',
+    PHP = 'application/php',
+    CSS = 'application/css',
+    TEXT = 'text/plain',
+    PNG = 'image/png',
+    JPG = 'image/jpg',
 }
 
-export = configureReporter;
+export const DEFAULT_FILE_TYPE = FILE_TYPES.PNG;

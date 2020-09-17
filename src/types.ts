@@ -15,18 +15,15 @@
  *
  */
 
-import { Reporter } from './reporter';
-import { ReportPortalConfig } from './models';
+declare module '@reportportal/client-javascript' {
+    export default class {
+        constructor(config: any, agentInfo?: any);
 
-function configureReporter(config: ReportPortalConfig) {
-
-  function getReporter(): Reporter {
-    const reporter = new Reporter(config);
-
-    return reporter;
-  }
-
-  return getReporter;
+        public startLaunch(launchObj: any): any;
+        public finishLaunch(launchId: string, launchObj: any): any;
+        public startTestItem(itemObj: any, launchId: string, parentId?: string): any;
+        public finishTestItem(itemId: string, itemObj: any): any;
+        public sendLog(itemId: string, itemObj: any, fileObj?: any): any;
+        public checkConnect(): any;
+    }
 }
-
-export = configureReporter;

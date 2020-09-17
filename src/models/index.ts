@@ -15,18 +15,27 @@
  *
  */
 
-import { Reporter } from './reporter';
-import { ReportPortalConfig } from './models';
+import {
+  StartTestItemRQ,
+  FinishTestItemRQ,
+  StartLaunchRQ,
+  FinishLaunchRQ,
+  LogRQ,
+  Attachment,
+} from './reporting';
+import { ReportPortalConfig } from './configs';
+import { Parameter, Attribute, Issue, StorageTestItem } from './common';
 
-function configureReporter(config: ReportPortalConfig) {
-
-  function getReporter(): Reporter {
-    const reporter = new Reporter(config);
-
-    return reporter;
-  }
-
-  return getReporter;
+export {
+  StartLaunchRQ,
+  FinishLaunchRQ,
+  FinishTestItemRQ,
+  StartTestItemRQ,
+  LogRQ,
+  Attachment,
+  ReportPortalConfig,
+  Parameter,
+  Attribute,
+  Issue,
+  StorageTestItem,
 }
-
-export = configureReporter;

@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "test": "testcafe"
+    "test": "node testcafe"
   },
   "devDependencies": {
     "testcafe": "^1.9.2"

@@ -1,47 +1,63 @@
+/*
+ *  Copyright 2020 EPAM Systems
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
+import RPClient from '@reportportal/client-javascript';
+import { ReportPortalConfig, StartLaunchRQ } from './models';
+import { getAgentInfo, getStartLaunchObj } from './utils';
+
 export class Reporter {
   private noColors: boolean;
-  private chalk: any;
+  private config: ReportPortalConfig;
+  private client: RPClient;
+  private startTime: number;
+  private launchId: string;
 
-  constructor() {
+  constructor(config: ReportPortalConfig) {
     this.noColors = true;
+
+    const agentInfo = getAgentInfo();
+
+    this.config = config;
+    this.client = new RPClient(config, agentInfo);
   };
 
-  // createErrorDecorator () {
-  //   return {
-  //     'span category':       () => '',
-  //     'span step-name': (str: any) => `"${str}"`,
-  //     'span user-agent': (str: any) => this.chalk.gray(str),
-  //     'div screenshot-info': (str: any) => str,
-  //     'a screenshot-path': (str: any) => this.chalk.underline(str),
-  //     'code': (str: any) => this.chalk.yellow(str),
-  //     'code step-source': (str: any) => this.chalk.magenta(this.indentString(str, 4)),
-  //     'span code-line': (str: any) => `${str}\n`,
-  //     'span last-code-line': (str: any) => str,
-  //     'code api': (str: any) => this.chalk.yellow(str),
-  //     'strong': (str: any) => this.chalk.cyan(str),
-  //     'a': (str: any) => this.chalk.yellow(`"${str}"`)
-  //   };
-  // }
+  reportTaskStart(startTime: number, userAgents: any, testCount: number) {
+    this.startTime = startTime;
+    const launchObj = {
+      attributes: this.config.attributes,
+      description: this.config.description,
+      startTime: new Date(startTime).valueOf(),
+    };
+    const startLaunchObj: StartLaunchRQ = getStartLaunchObj(launchObj);
 
-  reportTaskStart(...props: any[]/* startTime, userAgents, testCount */) {
-    console.log(props);
-    // throw new Error('Not implemented');
+    this.launchId = this.client.startLaunch(startLaunchObj).tempId;
   }
 
-  reportFixtureStart(/* name, path */) {
-    // throw new Error('Not implemented');
+  reportFixtureStart(name: string, path: string): void {
   }
 
-  reportTestStart(/* name, testMeta */) {
-    // NOTE: This method is optional.
+  reportTestStart(name: string, testMeta: any): void {
   }
 
-  reportTestDone(/* name, testRunInfo */) {
-    // throw new Error('Not implemented');
+  reportTestDone(name: string, testRunInfo: any): void {
   }
 
-  reportTaskDone(/* endTime, passed, warnings */) {
-    // throw new Error('Not implemented');
+  reportTaskDone(endTime: number, passed: any, warnings: any): void {
+    this.client.finishLaunch(this.launchId, {})
   }
 
   private indentString(str: any, number: number): void {

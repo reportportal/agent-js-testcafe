@@ -15,18 +15,20 @@
  *
  */
 
-import { Reporter } from './reporter';
-import { ReportPortalConfig } from './models';
+import { Attribute } from './common';
+import { LAUNCH_MODES } from '../constants';
 
-function configureReporter(config: ReportPortalConfig) {
+export interface ReportPortalConfig {
+  token: string;
+  project: string;
+  endpoint: string;
+  launch: string;
 
-  function getReporter(): Reporter {
-    const reporter = new Reporter(config);
-
-    return reporter;
-  }
-
-  return getReporter;
+  debug?: boolean;
+  attributes?: Array<Attribute>;
+  description?: string;
+  rerun?: boolean;
+  rerunOf?: string;
+  mode?: LAUNCH_MODES;
+  isLaunchMergeRequired?: boolean;
 }
-
-export = configureReporter;

@@ -15,18 +15,13 @@
  *
  */
 
-import { Reporter } from './reporter';
-import { ReportPortalConfig } from './models';
-
-function configureReporter(config: ReportPortalConfig) {
-
-  function getReporter(): Reporter {
-    const reporter = new Reporter(config);
-
-    return reporter;
-  }
-
-  return getReporter;
+export enum STATUSES {
+  FAILED = 'failed',
+  PASSED = 'passed',
+  SKIPPED = 'skipped',
+  STOPPED = 'stopped',
+  INTERRUPTED = 'interrupted',
+  CANCELLED = 'cancelled',
+  INFO = 'info',
+  WARN = 'warn',
 }
-
-export = configureReporter;
