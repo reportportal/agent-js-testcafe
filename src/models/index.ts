@@ -24,7 +24,7 @@ import {
   Attachment,
 } from './reporting';
 import { ReportPortalConfig } from './configs';
-import { Parameter, Attribute, Issue, StorageTestItem } from './common';
+import { Parameter, Attribute, Issue } from './common';
 
 export {
   StartLaunchRQ,
@@ -37,5 +37,4 @@ export {
   Parameter,
   Attribute,
   Issue,
-  StorageTestItem,
 }

@@ -59,10 +59,3 @@ export interface RPItemFinishRQ extends RPItem {
   status?: STATUSES;
   endTime?: Date | number;
 }
-
-export interface StorageTestItem extends RPItem {
-  id: string;
-  name: string;
-  testCaseId?: string;
-  status?: STATUSES;
-}
