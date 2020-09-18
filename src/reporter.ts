@@ -18,7 +18,7 @@
 import RPClient from '@reportportal/client-javascript';
 import { ReportPortalConfig, StartLaunchRQ, StartTestItemRQ } from './models';
 import { getAgentInfo, getStartLaunchObj, getLastItem } from './utils';
-import {STATUSES, TEST_ITEM_TYPES} from './constants';
+import { STATUSES, TEST_ITEM_TYPES } from './constants';
 
 interface TestItem {
   id: string;
@@ -80,7 +80,8 @@ export class Reporter {
 
   reportTaskDone(endTime: number, passed: any, warnings: any): void {
     this.finishSuites();
-    this.client.finishLaunch(this.launchId, { endTime })
+    this.client.finishLaunch(this.launchId, { endTime });
+    this.launchId = null;
   }
 
   finishSuites(): void {
