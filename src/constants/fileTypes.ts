@@ -15,8 +15,16 @@
  *
  */
 
-export { FILE_TYPES, DEFAULT_FILE_TYPE } from './fileTypes';
-export { LAUNCH_MODES } from './launchModes';
-export { LOG_LEVELS } from './logLevels';
-export { STATUSES } from './statuses';
-export { TEST_ITEM_TYPES } from './testItemTypes';
+export enum FILE_TYPES {
+    XML = 'application/xml',
+    HTML = 'application/html',
+    JAVASCRIPT = 'application/javascript',
+    JSON = 'application/json',
+    PHP = 'application/php',
+    CSS = 'application/css',
+    TEXT = 'text/plain',
+    PNG = 'image/png',
+    JPG = 'image/jpg',
+}
+
+export const DEFAULT_FILE_TYPE = FILE_TYPES.PNG;
