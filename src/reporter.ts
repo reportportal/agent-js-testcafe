@@ -16,8 +16,9 @@
  */
 
 import RPClient from '@reportportal/client-javascript';
-import { ReportPortalConfig, StartLaunchRQ } from './models';
-import { getAgentInfo, getStartLaunchObj } from './utils';
+import {ReportPortalConfig, StartLaunchRQ, StartTestItemRQ} from './models';
+import {getAgentInfo, getStartLaunchObj} from './utils';
+import {TEST_ITEM_TYPES} from "./constants";
 
 export class Reporter {
   private noColors: boolean;
@@ -25,9 +26,11 @@ export class Reporter {
   private client: RPClient;
   private startTime: number;
   private launchId: string;
+  private suiteIds: string[];
 
   constructor(config: ReportPortalConfig) {
     this.noColors = true;
+    this.suiteIds = [];
 
     const agentInfo = getAgentInfo();
 
@@ -38,11 +41,18 @@ export class Reporter {
   reportTaskStart(startTime: number, userAgents: any, testCount: number) {
     this.startTime = startTime;
     const startLaunchObj: StartLaunchRQ = getStartLaunchObj({ startTime }, this.config);
+    console.log(testCount);
 
     this.launchId = this.client.startLaunch(startLaunchObj).tempId;
   }
 
   reportFixtureStart(name: string, path: string): void {
+    const startSuiteObj: StartTestItemRQ = {
+      name,
+      type: TEST_ITEM_TYPES.SUITE,
+    };
+    const suiteId = this.client.startTestItem(startSuiteObj, this.launchId).tempId;
+    this.suiteIds.push(suiteId);
   }
 
   reportTestStart(name: string, testMeta: any): void {
@@ -52,10 +62,13 @@ export class Reporter {
   }
 
   reportTaskDone(endTime: number, passed: any, warnings: any): void {
-    this.client.finishLaunch(this.launchId, {})
+    this.finishSuites();
+    this.client.finishLaunch(this.launchId, { endTime })
   }
 
-  private indentString(str: any, number: number): void {
-    return undefined;
+  finishSuites(): void {
+    this.suiteIds.forEach((suiteId) => {
+      this.client.finishTestItem(suiteId, {});
+    });
   }
 }
