@@ -19,6 +19,8 @@
 import { version as pjsonVersion, name as pjsonName } from '../package.json';
 import { Attribute, StartLaunchRQ, ReportPortalConfig } from './models';
 
+export const getLastItem = (items: any[] = []): any => items[items.length - 1];
+
 export const getAgentInfo = () => ({
   version: pjsonVersion,
   name: pjsonName,

@@ -16,9 +16,14 @@
  */
 
 import RPClient from '@reportportal/client-javascript';
-import {ReportPortalConfig, StartLaunchRQ, StartTestItemRQ} from './models';
-import {getAgentInfo, getStartLaunchObj} from './utils';
-import {TEST_ITEM_TYPES} from "./constants";
+import { ReportPortalConfig, StartLaunchRQ, StartTestItemRQ } from './models';
+import { getAgentInfo, getStartLaunchObj, getLastItem } from './utils';
+import {STATUSES, TEST_ITEM_TYPES} from './constants';
+
+interface TestItem {
+  id: string;
+  name: string;
+}
 
 export class Reporter {
   private noColors: boolean;
@@ -27,10 +32,12 @@ export class Reporter {
   private startTime: number;
   private launchId: string;
   private suiteIds: string[];
+  private testItems: TestItem[];
 
   constructor(config: ReportPortalConfig) {
     this.noColors = true;
     this.suiteIds = [];
+    this.testItems = [];
 
     const agentInfo = getAgentInfo();
 
@@ -41,7 +48,6 @@ export class Reporter {
   reportTaskStart(startTime: number, userAgents: any, testCount: number) {
     this.startTime = startTime;
     const startLaunchObj: StartLaunchRQ = getStartLaunchObj({ startTime }, this.config);
-    console.log(testCount);
 
     this.launchId = this.client.startLaunch(startLaunchObj).tempId;
   }
@@ -56,9 +62,20 @@ export class Reporter {
   }
 
   reportTestStart(name: string, testMeta: any): void {
+    const startTestObj: StartTestItemRQ = {
+      name,
+      type: TEST_ITEM_TYPES.STEP,
+    };
+    const parentId = getLastItem(this.suiteIds);
+    const stepId = this.client.startTestItem(startTestObj, this.launchId, parentId).tempId;
+
+    this.testItems.push({ name, id: stepId });
   }
 
   reportTestDone(name: string, testRunInfo: any): void {
+    const testItemId = this.testItems.find((item) => item.name === name).id;
+
+    this.client.finishTestItem(testItemId, { status: STATUSES.PASSED });
   }
 
   reportTaskDone(endTime: number, passed: any, warnings: any): void {
