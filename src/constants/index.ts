@@ -15,18 +15,8 @@
  *
  */
 
-import { Reporter } from './reporter';
-import { ReportPortalConfig } from './models';
-
-function configureReporter(config: ReportPortalConfig) {
-
-  function getReporter(): Reporter {
-    const reporter = new Reporter(config);
-
-    return reporter;
-  }
-
-  return getReporter;
-}
-
-export = configureReporter;
+export { FILE_TYPES, DEFAULT_FILE_TYPE } from './fileTypes';
+export { LAUNCH_MODES } from './launchModes';
+export { LOG_LEVELS } from './logLevels';
+export { STATUSES } from './statuses';
+export { TEST_ITEM_TYPES } from './testItemTypes';

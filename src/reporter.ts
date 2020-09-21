@@ -1,50 +1,92 @@
+/*
+ *  Copyright 2020 EPAM Systems
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
+import RPClient from '@reportportal/client-javascript';
+import { ReportPortalConfig, StartLaunchRQ, StartTestItemRQ } from './models';
+import { getAgentInfo, getStartLaunchObj, getLastItem } from './utils';
+import { STATUSES, TEST_ITEM_TYPES } from './constants';
+
+interface TestItem {
+  id: string;
+  name: string;
+}
+
 export class Reporter {
   private noColors: boolean;
-  private chalk: any;
+  private config: ReportPortalConfig;
+  private client: RPClient;
+  private startTime: number;
+  private launchId: string;
+  private suiteIds: string[];
+  private testItems: TestItem[];
 
-  constructor() {
+  constructor(config: ReportPortalConfig) {
     this.noColors = true;
+    this.suiteIds = [];
+    this.testItems = [];
+
+    const agentInfo = getAgentInfo();
+
+    this.config = config;
+    this.client = new RPClient(config, agentInfo);
   };
 
-  // createErrorDecorator () {
-  //   return {
-  //     'span category':       () => '',
-  //     'span step-name': (str: any) => `"${str}"`,
-  //     'span user-agent': (str: any) => this.chalk.gray(str),
-  //     'div screenshot-info': (str: any) => str,
-  //     'a screenshot-path': (str: any) => this.chalk.underline(str),
-  //     'code': (str: any) => this.chalk.yellow(str),
-  //     'code step-source': (str: any) => this.chalk.magenta(this.indentString(str, 4)),
-  //     'span code-line': (str: any) => `${str}\n`,
-  //     'span last-code-line': (str: any) => str,
-  //     'code api': (str: any) => this.chalk.yellow(str),
-  //     'strong': (str: any) => this.chalk.cyan(str),
-  //     'a': (str: any) => this.chalk.yellow(`"${str}"`)
-  //   };
-  // }
+  reportTaskStart(startTime: number, userAgents: any, testCount: number) {
+    this.startTime = startTime;
+    const startLaunchObj: StartLaunchRQ = getStartLaunchObj({ startTime }, this.config);
 
-  reportTaskStart(...props: any[]/* startTime, userAgents, testCount */) {
-    console.log(props);
-    // throw new Error('Not implemented');
+    this.launchId = this.client.startLaunch(startLaunchObj).tempId;
   }
 
-  reportFixtureStart(/* name, path */) {
-    // throw new Error('Not implemented');
+  reportFixtureStart(name: string, path: string): void {
+    const startSuiteObj: StartTestItemRQ = {
+      name,
+      type: TEST_ITEM_TYPES.SUITE,
+    };
+    const suiteId = this.client.startTestItem(startSuiteObj, this.launchId).tempId;
+    this.suiteIds.push(suiteId);
   }
 
-  reportTestStart(/* name, testMeta */) {
-    // NOTE: This method is optional.
+  reportTestStart(name: string, testMeta: any): void {
+    const startTestObj: StartTestItemRQ = {
+      name,
+      type: TEST_ITEM_TYPES.STEP,
+    };
+    const parentId = getLastItem(this.suiteIds);
+    const stepId = this.client.startTestItem(startTestObj, this.launchId, parentId).tempId;
+
+    this.testItems.push({ name, id: stepId });
   }
 
-  reportTestDone(/* name, testRunInfo */) {
-    // throw new Error('Not implemented');
+  reportTestDone(name: string, testRunInfo: any): void {
+    const testItemId = this.testItems.find((item) => item.name === name).id;
+
+    this.client.finishTestItem(testItemId, { status: STATUSES.PASSED });
   }
 
-  reportTaskDone(/* endTime, passed, warnings */) {
-    // throw new Error('Not implemented');
+  reportTaskDone(endTime: number, passed: any, warnings: any): void {
+    this.finishSuites();
+    this.client.finishLaunch(this.launchId, { endTime });
+    this.launchId = null;
   }
 
-  private indentString(str: any, number: number): void {
-    return undefined;
+  finishSuites(): void {
+    this.suiteIds.forEach((suiteId) => {
+      this.client.finishTestItem(suiteId, {});
+    });
   }
 }

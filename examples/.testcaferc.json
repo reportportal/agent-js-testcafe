@@ -1,8 +1,8 @@
 {
   "browsers": "chrome",
-  "src": "./tests/**/*.ts",
-  "takeScreenshotsOnFails": true,
-  "reporter": {
-    "name": "my-reporter"
-  }
+  "src": "./tests/**/*.js",
+  "screenshots": {
+    "path": "./screenshots/"
+  },
+  "takeScreenshotsOnFails": true
 }

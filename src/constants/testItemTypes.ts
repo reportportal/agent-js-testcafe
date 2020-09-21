@@ -15,18 +15,8 @@
  *
  */
 
-import { Reporter } from './reporter';
-import { ReportPortalConfig } from './models';
-
-function configureReporter(config: ReportPortalConfig) {
-
-  function getReporter(): Reporter {
-    const reporter = new Reporter(config);
-
-    return reporter;
-  }
-
-  return getReporter;
+export enum TEST_ITEM_TYPES {
+    SUITE = 'SUITE',
+    TEST = 'TEST',
+    STEP = 'STEP',
 }
-
-export = configureReporter;
