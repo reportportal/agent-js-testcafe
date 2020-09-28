@@ -3,6 +3,6 @@
     "test": "node testcafe.js"
   },
   "devDependencies": {
-    "testcafe": "^1.9.2"
+    "testcafe": "^1.9.3"
   }
 }
