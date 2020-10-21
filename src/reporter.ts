@@ -16,9 +16,10 @@
  */
 
 import RPClient from '@reportportal/client-javascript';
+import stripAnsi from 'strip-ansi';
 import { ReportPortalConfig, StartLaunchRQ, StartTestItemRQ } from './models';
-import { getAgentInfo, getStartLaunchObj, getLastItem } from './utils';
-import { STATUSES, TEST_ITEM_TYPES } from './constants';
+import { getAgentInfo, getLastItem, getStartLaunchObj } from './utils';
+import { LOG_LEVELS, STATUSES, TEST_ITEM_TYPES } from './constants';
 
 interface TestItem {
   id: string;
@@ -35,7 +36,7 @@ export class Reporter {
   private testItems: TestItem[];
 
   constructor(config: ReportPortalConfig) {
-    this.noColors = true;
+    this.noColors = false;
     this.suiteIds = [];
     this.testItems = [];
 
@@ -73,9 +74,19 @@ export class Reporter {
   }
 
   reportTestDone(name: string, testRunInfo: any): void {
+    const hasError = !!testRunInfo.errs.length;
     const testItemId = this.testItems.find((item) => item.name === name).id;
+    let status = STATUSES.PASSED;
 
-    this.client.finishTestItem(testItemId, { status: STATUSES.PASSED });
+    if (testRunInfo.skipped) {
+      status = STATUSES.SKIPPED;
+    } else if (hasError) {
+      status = STATUSES.FAILED;
+      this.sendLogsOnFail(testRunInfo.errs, testItemId);
+    }
+
+    this.client.finishTestItem(testItemId, { status });
+    this.testItems = this.testItems.filter((item) => item.id !== testItemId);
   }
 
   reportTaskDone(endTime: number, passed: any, warnings: any): void {
@@ -87,6 +98,16 @@ export class Reporter {
   finishSuites(): void {
     this.suiteIds.forEach((suiteId) => {
       this.client.finishTestItem(suiteId, {});
+    });
+  }
+
+  sendLogsOnFail(errors: any, testItemId: string): void {
+    errors.forEach((error: any) => {
+      this.client.sendLog(testItemId, {
+        level: LOG_LEVELS.ERROR,
+        // @ts-ignore
+        message: stripAnsi(this.formatError(error)),
+      });
     });
   }
 }

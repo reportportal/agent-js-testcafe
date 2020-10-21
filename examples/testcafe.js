@@ -20,7 +20,7 @@ const configureReporter = require('@reportportal/agent-js-testcafe');
 const rpConfig = require('./rp.json');
 
 async function start() {
-    const testcafe = await createTestCafe('localhost', 1337, 1338);
+    const testcafe = await createTestCafe('localhost');
     const runner = testcafe.createRunner();
 
     await runner
