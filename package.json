@@ -8,8 +8,8 @@
     "clean": "rimraf ./build",
     "lint": "eslint \"src/**/*.ts\"",
     "format": "npm run lint -- --fix",
-    "test": "exit 0",
-    "test:coverage": "exit 0",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
     "link": "npm link && cd examples && npm link @reportportal/agent-js-testcafe",
     "rebuild": "npm run build && npm link",
     "example": "cd examples && npm run test"

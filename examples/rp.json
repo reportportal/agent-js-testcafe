@@ -1,0 +1,7 @@
+{
+  "project": "PROJECT_NAME",
+  "token": "00000000-0000-0000-0000-000000000000",
+  "endpoint": "https://your.reportportal.server/api/v1",
+  "launch": "Launch name",
+  "mode": "DEFAULT"
+}
