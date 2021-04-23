@@ -30,25 +30,25 @@ export interface Parameter {
 
 interface ExternalSystemIssue {
   url: string;
-  btsProject: string,
-  btsUrl: string,
-  ticketId: string,
+  btsProject: string;
+  btsUrl: string;
+  ticketId: string;
 
-  submitDate?: number,
+  submitDate?: number;
 }
 
 export interface Issue {
-  issueType: string
+  issueType: string;
 
-  autoAnalyzed?: boolean,
-  ignoreAnalyzer?: boolean,
-  comment?: string,
+  autoAnalyzed?: boolean;
+  ignoreAnalyzer?: boolean;
+  comment?: string;
   externalSystemIssues?: Array<ExternalSystemIssue>;
 }
 
-interface RPItem {
-  attributes?: Array<Attribute>,
-  description?: string,
+export interface RPItem {
+  attributes?: Array<Attribute>;
+  description?: string;
 }
 
 export interface RPItemStartRQ extends RPItem {
