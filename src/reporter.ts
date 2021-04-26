@@ -46,7 +46,7 @@ export class Reporter {
     this.client = new RPClient(config, agentInfo);
   }
 
-  reportTaskStart(startTime: number, userAgents: any, testCount: number) {
+  reportTaskStart(startTime: number, userAgents: any, testCount: number): void {
     this.startTime = startTime;
     const startLaunchObj: StartLaunchRQ = getStartLaunchObj({ startTime }, this.config);
 
@@ -58,6 +58,7 @@ export class Reporter {
       name,
       type: TEST_ITEM_TYPES.SUITE,
       description: meta.description,
+      attributes: meta.attributes,
     };
     const suiteId = this.client.startTestItem(startSuiteObj, this.launchId).tempId;
     this.suiteIds.push(suiteId);
@@ -68,6 +69,7 @@ export class Reporter {
       name,
       type: TEST_ITEM_TYPES.STEP,
       description: testMeta.description,
+      attributes: testMeta.attributes,
     };
     const parentId = getLastItem(this.suiteIds);
     const stepId = this.client.startTestItem(startTestObj, this.launchId, parentId).tempId;

@@ -78,11 +78,13 @@ describe('reporting', () => {
     const reporter = setupReporter(['launchId']);
     const meta = {
       description: 'suite_description',
+      attributes: [{ key: 'key', value: 'value' }, { value: 'value' }],
     };
     const startSuiteObj: StartTestItemRQ = {
       name: suiteName,
       type: TEST_ITEM_TYPES.SUITE,
       description: meta.description,
+      attributes: meta.attributes,
     };
 
     reporter.reportFixtureStart(suiteName, undefined, meta);
@@ -101,11 +103,13 @@ describe('reporting', () => {
     const reporter = setupReporter(['launchId', 'suiteIds']);
     const testMeta = {
       description: 'test_description',
+      attributes: [{ key: 'key', value: 'value' }, { value: 'value' }],
     };
     const startTestObj: StartTestItemRQ = {
       name: testName,
       type: TEST_ITEM_TYPES.STEP,
       description: testMeta.description,
+      attributes: testMeta.attributes,
     };
 
     reporter.reportTestStart(testName, testMeta);

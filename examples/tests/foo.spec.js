@@ -1,7 +1,10 @@
 import { Selector } from 'testcafe';
 
 fixture`Getting Started`.page`http://devexpress.github.io/testcafe/example
-`.meta({ description: 'first suit description' });
+`.meta({
+  description: 'first suit description',
+  attributes: [{ key: 'key', value: 'value' }, { value: 'value' }],
+});
 
 test('My first test', async (page) => {
   await page
@@ -12,10 +15,12 @@ test('My first test', async (page) => {
     .eql('Thank you, John Smith!');
 }).meta({
   description: 'first test description',
+  attributes: [{ key: 'key', value: 'value' }, { value: 'value' }],
 });
 
 fixture`The next fixture`.page`http://devexpress.github.io/testcafe/example`.meta({
   description: 'second suit description',
+  attributes: [{ key: 'key', value: 'value' }, { value: 'value' }],
 });
 
 test('My second test', async (page) => {
@@ -27,4 +32,5 @@ test('My second test', async (page) => {
     .eql('Thank you, Baraka Omaba!');
 }).meta({
   description: 'second test description',
+  attributes: [{ key: 'key', value: 'value' }, { value: 'value' }],
 });
