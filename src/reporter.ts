@@ -17,7 +17,7 @@
 
 import RPClient from '@reportportal/client-javascript';
 import stripAnsi from 'strip-ansi';
-import { ReportPortalConfig, StartLaunchRQ, StartTestItemRQ } from './models';
+import { ReportPortalConfig, StartLaunchRQ, StartTestItemRQ, RPItem } from './models';
 import { getAgentInfo, getLastItem, getStartLaunchObj } from './utils';
 import { LOG_LEVELS, STATUSES, TEST_ITEM_TYPES } from './constants';
 
@@ -44,7 +44,7 @@ export class Reporter {
 
     this.config = config;
     this.client = new RPClient(config, agentInfo);
-  };
+  }
 
   reportTaskStart(startTime: number, userAgents: any, testCount: number) {
     this.startTime = startTime;
@@ -53,19 +53,21 @@ export class Reporter {
     this.launchId = this.client.startLaunch(startLaunchObj).tempId;
   }
 
-  reportFixtureStart(name: string, path: string): void {
+  reportFixtureStart(name: string, path: string, meta: RPItem): void {
     const startSuiteObj: StartTestItemRQ = {
       name,
       type: TEST_ITEM_TYPES.SUITE,
+      description: meta.description,
     };
     const suiteId = this.client.startTestItem(startSuiteObj, this.launchId).tempId;
     this.suiteIds.push(suiteId);
   }
 
-  reportTestStart(name: string, testMeta: any): void {
+  reportTestStart(name: string, testMeta: RPItem): void {
     const startTestObj: StartTestItemRQ = {
       name,
       type: TEST_ITEM_TYPES.STEP,
+      description: testMeta.description,
     };
     const parentId = getLastItem(this.suiteIds);
     const stepId = this.client.startTestItem(startTestObj, this.launchId, parentId).tempId;
