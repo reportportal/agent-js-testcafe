@@ -169,7 +169,10 @@ describe('reporting', () => {
       const reporter = setupReporter(['launchId', 'suiteIds', 'testItems']);
       testRunInfo.skipped = false;
       testRunInfo.errs = ['401 unauthorized'];
-      reporter.sendLogsOnFail = jest.fn((errors, testItemId) => ({ errors, testItemId }));
+      jest.spyOn(reporter, 'sendLogsOnFail').mockImplementation((errors, testItemId) => ({
+        errors,
+        testItemId,
+      }));
 
       reporter.reportTestDone(testName, testRunInfo);
 
@@ -181,10 +184,10 @@ describe('reporting', () => {
 
       test('reporter.sendLogsOnFail should be called with error & testItemId', () => {
         expect(reporter.sendLogsOnFail).toHaveBeenCalledTimes(1);
-        expect((reporter.sendLogsOnFail as jest.Mock).mock.calls[0][0]).toEqual([
-          '401 unauthorized',
-        ]);
-        expect((reporter.sendLogsOnFail as jest.Mock).mock.calls[0][1]).toEqual('tempTestItemId');
+        expect(reporter.sendLogsOnFail).toHaveBeenCalledWith(
+          ['401 unauthorized'],
+          'tempTestItemId',
+        );
       });
 
       test('reporter.testItems should be []', () => {
