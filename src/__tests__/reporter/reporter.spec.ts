@@ -105,7 +105,7 @@ describe('reporting', () => {
 
   describe('start report test item', () => {
     const reporter = setupReporter(['launchId', 'suiteIds']);
-    reporter['testData'] = { path: filePath, suiteName, testName };
+    reporter['testData'] = { path: filePath, suiteName };
     const testMeta = {
       description: 'test_description',
       attributes: [{ key: 'key', value: 'value' }, { value: 'value' }],

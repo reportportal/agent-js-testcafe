@@ -2,7 +2,7 @@
   "name": "@reportportal/agent-js-testcafe",
   "version": "5.0.0",
   "description": "Agent for integration TestCafe with ReportPortal.",
-  "main": "build/index.js",
+  "main": "build/src/index.js",
   "scripts": {
     "build": "npm run clean && tsc",
     "clean": "rimraf ./build",

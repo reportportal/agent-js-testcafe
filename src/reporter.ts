@@ -70,7 +70,6 @@ export class Reporter {
   }
 
   reportTestStart(name: string, testMeta: RPItem): void {
-    this.testData = { ...this.testData, testName: name };
     const { path, suiteName } = this.testData;
     const codeRef = getCodeRef(path, [suiteName, name]);
     const startTestObj: StartTestItemRQ = {

@@ -51,7 +51,7 @@ describe('getCodeRef', () => {
   test('pass string to getCodeRef ', () => {
     const codeRef = getCodeRef(testPath, suiteTitle);
     const expectedRes = '__test__/example.js/suiteTitle';
-    expect(codeRef).toEqual(expectedRes);
+    expect(codeRef).toBe(expectedRes);
   });
 
   test('pass array of strings to getCodeRef', () => {
