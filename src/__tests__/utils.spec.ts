@@ -15,9 +15,9 @@
  *
  */
 
-// @ts-ignore
+import path from 'path';
 import packageJson from '../../package.json';
-import { getAgentInfo, getSystemAttributes, getStartLaunchObj } from '../utils';
+import { getAgentInfo, getSystemAttributes, getStartLaunchObj, getCodeRef } from '../utils';
 
 describe('getAgentInfo', function() {
   test('should return the name and version of application from package.json file', function() {
@@ -39,5 +39,24 @@ describe('getSystemAttributes', function() {
         system: true,
       },
     ]);
+  });
+});
+
+describe('getCodeRef', () => {
+  jest.spyOn(process, 'cwd').mockReturnValue(`C:${path.sep}project`);
+  const testPath = `C:${path.sep}project${path.sep}__test__${path.sep}example.js`;
+  const suiteTitle = 'suiteTitle';
+  const testTitle = 'testTitle';
+
+  test('pass string to getCodeRef ', () => {
+    const codeRef = getCodeRef(testPath, suiteTitle);
+    const expectedRes = '__test__/example.js/suiteTitle';
+    expect(codeRef).toBe(expectedRes);
+  });
+
+  test('pass array of strings to getCodeRef', () => {
+    const codeRef = getCodeRef(testPath, [suiteTitle, testTitle]);
+    const expectedRes = '__test__/example.js/suiteTitle/testTitle';
+    expect(codeRef).toBe(expectedRes);
   });
 });

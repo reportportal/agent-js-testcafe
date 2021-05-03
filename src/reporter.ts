@@ -18,7 +18,7 @@
 import RPClient from '@reportportal/client-javascript';
 import stripAnsi from 'strip-ansi';
 import { ReportPortalConfig, StartLaunchRQ, StartTestItemRQ, RPItem } from './models';
-import { getAgentInfo, getLastItem, getStartLaunchObj } from './utils';
+import { getAgentInfo, getLastItem, getStartLaunchObj, getCodeRef } from './utils';
 import { LOG_LEVELS, STATUSES, TEST_ITEM_TYPES } from './constants';
 
 interface TestItem {
@@ -34,11 +34,13 @@ export class Reporter {
   private launchId: string;
   private suiteIds: string[];
   private testItems: TestItem[];
+  private testData: { [name: string]: string };
 
   constructor(config: ReportPortalConfig) {
     this.noColors = false;
     this.suiteIds = [];
     this.testItems = [];
+    this.testData = {};
 
     const agentInfo = getAgentInfo();
 
@@ -54,22 +56,28 @@ export class Reporter {
   }
 
   reportFixtureStart(name: string, path: string, meta: RPItem): void {
+    this.testData = { ...this.testData, path, suiteName: name };
+    const codeRef = getCodeRef(path, name);
     const startSuiteObj: StartTestItemRQ = {
       name,
       type: TEST_ITEM_TYPES.SUITE,
       description: meta.description,
       attributes: meta.attributes,
+      codeRef,
     };
     const suiteId = this.client.startTestItem(startSuiteObj, this.launchId).tempId;
     this.suiteIds.push(suiteId);
   }
 
   reportTestStart(name: string, testMeta: RPItem): void {
+    const { path, suiteName } = this.testData;
+    const codeRef = getCodeRef(path, [suiteName, name]);
     const startTestObj: StartTestItemRQ = {
       name,
       type: TEST_ITEM_TYPES.STEP,
       description: testMeta.description,
       attributes: testMeta.attributes,
+      codeRef,
     };
     const parentId = getLastItem(this.suiteIds);
     const stepId = this.client.startTestItem(startTestObj, this.launchId, parentId).tempId;
@@ -103,6 +111,7 @@ export class Reporter {
     this.suiteIds.forEach((suiteId) => {
       this.client.finishTestItem(suiteId, {});
     });
+    this.testData = {};
   }
 
   sendLogsOnFail(errors: any, testItemId: string): void {

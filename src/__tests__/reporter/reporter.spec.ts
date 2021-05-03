@@ -15,6 +15,7 @@
  *
  */
 
+import path from 'path';
 import { Reporter } from '../../reporter';
 import { getDefaultMockConfig, RPClientMock } from './RPClientMock';
 import { StartLaunchRQ, StartTestItemRQ } from '../../models';
@@ -54,8 +55,10 @@ describe('setup reporter', () => {
 });
 
 describe('reporting', () => {
+  jest.spyOn(process, 'cwd').mockReturnValue(`C:${path.sep}project`);
   const suiteName = 'suite_name';
   const testName = 'test_name';
+  const filePath = `C:${path.sep}project${path.sep}__test__${path.sep}test.spec.js`;
 
   describe('start report launch', () => {
     const reporter = setupReporter();
@@ -85,9 +88,10 @@ describe('reporting', () => {
       type: TEST_ITEM_TYPES.SUITE,
       description: meta.description,
       attributes: meta.attributes,
+      codeRef: `__test__/test.spec.js/${suiteName}`,
     };
 
-    reporter.reportFixtureStart(suiteName, undefined, meta);
+    reporter.reportFixtureStart(suiteName, filePath, meta);
 
     test('client.startTestItem should be called with corresponding params', () => {
       expect(reporter['client'].startTestItem).toHaveBeenCalledTimes(1);
@@ -101,6 +105,7 @@ describe('reporting', () => {
 
   describe('start report test item', () => {
     const reporter = setupReporter(['launchId', 'suiteIds']);
+    reporter['testData'] = { path: filePath, suiteName };
     const testMeta = {
       description: 'test_description',
       attributes: [{ key: 'key', value: 'value' }, { value: 'value' }],
@@ -110,6 +115,7 @@ describe('reporting', () => {
       type: TEST_ITEM_TYPES.STEP,
       description: testMeta.description,
       attributes: testMeta.attributes,
+      codeRef: `__test__/test.spec.js/${suiteName}/${testName}`,
     };
 
     reporter.reportTestStart(testName, testMeta);
@@ -202,6 +208,7 @@ describe('reporting', () => {
 
   describe('finish report launch', () => {
     const reporter = setupReporter(['launchId', 'suiteIds']);
+    reporter['testData'] = { path: filePath, suiteName, testName };
     const endTime = Date.now();
 
     reporter.reportTaskDone(endTime, undefined, undefined);
@@ -209,6 +216,10 @@ describe('reporting', () => {
     test('client.finishTestItem should be called', () => {
       expect(reporter['client'].finishTestItem).toHaveBeenCalledTimes(1);
       expect(reporter['client'].finishTestItem).toHaveBeenCalledWith('tempTestItemId', {});
+    });
+
+    test('testData should be reset', () => {
+      expect(reporter['testData']).toEqual({});
     });
 
     test('client.finishLaunch should be called with corresponding params', () => {

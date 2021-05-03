@@ -15,7 +15,7 @@
  *
  */
 
-// @ts-ignore
+import path from 'path';
 import { version as pjsonVersion, name as pjsonName } from '../package.json';
 import { Attribute, StartLaunchRQ, ReportPortalConfig } from './models';
 
@@ -26,23 +26,33 @@ export const getAgentInfo = () => ({
   name: pjsonName,
 });
 
-export const getSystemAttributes = (): Array<Attribute> => ([{
-  key: 'agent',
-  value: `${pjsonName}|${pjsonVersion}`,
-  system: true,
-}]);
+export const getSystemAttributes = (): Array<Attribute> => [
+  {
+    key: 'agent',
+    value: `${pjsonName}|${pjsonVersion}`,
+    system: true,
+  },
+];
 
-export const getStartLaunchObj = (launchObj: StartLaunchRQ, config: ReportPortalConfig): StartLaunchRQ => {
+export const getStartLaunchObj = (
+  launchObj: StartLaunchRQ,
+  config: ReportPortalConfig,
+): StartLaunchRQ => {
   const systemAttributes: Array<Attribute> = getSystemAttributes();
 
   return {
     ...launchObj,
-    attributes: config.attributes
-      ? config.attributes.concat(systemAttributes)
-      : systemAttributes,
+    attributes: config.attributes ? config.attributes.concat(systemAttributes) : systemAttributes,
     description: config.description,
     rerun: config.rerun,
     rerunOf: config.rerunOf,
     mode: config.mode,
   };
+};
+
+export const getCodeRef = (basePath: string, testName: string | Array<string>): string => {
+  const relativePath = path.relative(process.cwd(), basePath).replace(/\\/g, '/');
+  const name = Array.isArray(testName) ? testName.join('/') : testName;
+
+  return [relativePath, name].join('/');
 };
