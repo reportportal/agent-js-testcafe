@@ -158,6 +158,10 @@ describe('reporting', () => {
     });
 
     describe('test with SKIPPED status', () => {
+      afterAll(() => {
+        delete config.skippedIssue;
+      });
+
       const reporter = setupReporter(['launchId', 'suiteIds', 'testItems']);
       testRunInfo.skipped = true;
 
@@ -172,6 +176,20 @@ describe('reporting', () => {
 
       test('reporter.testItems should be []', () => {
         expect(reporter['testItems']).toEqual([]);
+      });
+
+      test('client.finishTestItem should be called with corresponding params in case skippedIssue=false', () => {
+        config.skippedIssue = false;
+        const reporter = setupReporter(['launchId', 'suiteIds', 'testItems']);
+        testRunInfo.skipped = true;
+        reporter.reportTestDone(testName, testRunInfo);
+
+        expect(reporter['client'].finishTestItem).toHaveBeenCalledWith('tempTestItemId', {
+          status: STATUSES.SKIPPED,
+          issue: {
+            issueType: 'NOT_ISSUE',
+          },
+        });
       });
     });
 

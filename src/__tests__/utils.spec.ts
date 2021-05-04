@@ -29,16 +29,28 @@ describe('getAgentInfo', function() {
 });
 
 describe('getSystemAttributes', function() {
+  const expectedRes = [
+    {
+      key: 'agent',
+      value: `${packageJson.name}|${packageJson.version}`,
+      system: true,
+    },
+  ];
   test('should return the list of system attributes', function() {
     const systemAttributes = getSystemAttributes();
 
-    expect(systemAttributes).toEqual([
-      {
-        key: 'agent',
-        value: `${packageJson.name}|${packageJson.version}`,
-        system: true,
-      },
-    ]);
+    expect(systemAttributes).toEqual(expectedRes);
+  });
+
+  test('should return expected list of system attributes in case skippedIssue=false', () => {
+    const systemAttributes = getSystemAttributes(false);
+    const skippedIssueAttribute = {
+      key: 'skippedIssue',
+      value: 'false',
+      system: true,
+    };
+
+    expect(systemAttributes).toEqual([...expectedRes, skippedIssueAttribute]);
   });
 });
 

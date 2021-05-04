@@ -89,15 +89,19 @@ export class Reporter {
     const hasError = !!testRunInfo.errs.length;
     const testItemId = this.testItems.find((item) => item.name === name).id;
     let status = STATUSES.PASSED;
-
+    let withoutIssue;
     if (testRunInfo.skipped) {
       status = STATUSES.SKIPPED;
+      withoutIssue = this.config.skippedIssue === false;
     } else if (hasError) {
       status = STATUSES.FAILED;
       this.sendLogsOnFail(testRunInfo.errs, testItemId);
     }
-
-    this.client.finishTestItem(testItemId, { status });
+    const finishTestItemObj = {
+      status,
+      ...(withoutIssue && { issue: { issueType: 'NOT_ISSUE' } }),
+    };
+    this.client.finishTestItem(testItemId, finishTestItemObj);
     this.testItems = this.testItems.filter((item) => item.id !== testItemId);
   }
 
