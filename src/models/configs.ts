@@ -31,4 +31,5 @@ export interface ReportPortalConfig {
   rerunOf?: string;
   mode?: LAUNCH_MODES;
   isLaunchMergeRequired?: boolean;
+  skippedIssue?: boolean;
 }

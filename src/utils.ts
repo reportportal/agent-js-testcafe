@@ -26,19 +26,32 @@ export const getAgentInfo = () => ({
   name: pjsonName,
 });
 
-export const getSystemAttributes = (): Array<Attribute> => [
-  {
-    key: 'agent',
-    value: `${pjsonName}|${pjsonVersion}`,
-    system: true,
-  },
-];
+export const getSystemAttributes = (skippedIssue = true): Array<Attribute> => {
+  const systemAttributes = [
+    {
+      key: 'agent',
+      value: `${pjsonName}|${pjsonVersion}`,
+      system: true,
+    },
+  ];
+
+  if (skippedIssue === false) {
+    const skippedIssueAttribute = {
+      key: 'skippedIssue',
+      value: 'false',
+      system: true,
+    };
+    systemAttributes.push(skippedIssueAttribute);
+  }
+
+  return systemAttributes;
+};
 
 export const getStartLaunchObj = (
   launchObj: StartLaunchRQ,
   config: ReportPortalConfig,
 ): StartLaunchRQ => {
-  const systemAttributes: Array<Attribute> = getSystemAttributes();
+  const systemAttributes: Array<Attribute> = getSystemAttributes(config.skippedIssue);
 
   return {
     ...launchObj,
