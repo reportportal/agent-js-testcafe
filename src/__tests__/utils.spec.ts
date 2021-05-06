@@ -17,7 +17,15 @@
 
 import path from 'path';
 import packageJson from '../../package.json';
-import { getAgentInfo, getSystemAttributes, getStartLaunchObj, getCodeRef } from '../utils';
+import {
+  getAgentInfo,
+  getSystemAttributes,
+  getStartLaunchObj,
+  getCodeRef,
+  getLastItem,
+} from '../utils';
+import { StartLaunchRQ } from '../models';
+import { config } from './mocks/configMock';
 
 describe('getAgentInfo', function() {
   test('should return the name and version of application from package.json file', function() {
@@ -70,5 +78,48 @@ describe('getCodeRef', () => {
     const codeRef = getCodeRef(testPath, [suiteTitle, testTitle]);
     const expectedRes = '__test__/example.js/suiteTitle/testTitle';
     expect(codeRef).toBe(expectedRes);
+  });
+});
+
+describe('getLastItem', () => {
+  test('should return last item', () => {
+    const items = [1, 2, 3];
+    expect(getLastItem(items)).toBe(3);
+  });
+
+  test('call without arguments', () => {
+    expect(getLastItem()).toBe(undefined);
+  });
+});
+
+describe('getStartLaunchObj', () => {
+  const launchObj: StartLaunchRQ = {};
+  const systemAttributes = getSystemAttributes(config.skippedIssue);
+
+  test('', () => {
+    const expectedRes = {
+      ...launchObj,
+      attributes: systemAttributes,
+      description: config.description,
+      rerun: config.rerun,
+      rerunOf: config.rerunOf,
+      mode: config.mode,
+    };
+
+    expect(getStartLaunchObj(launchObj, config)).toEqual(expectedRes);
+  });
+
+  test('', () => {
+    config.attributes = [{ key: 'key', value: 'value' }];
+    const expectedRes = {
+      ...launchObj,
+      attributes: [...config.attributes, ...systemAttributes],
+      description: config.description,
+      rerun: config.rerun,
+      rerunOf: config.rerunOf,
+      mode: config.mode,
+    };
+
+    expect(getStartLaunchObj(launchObj, config)).toEqual(expectedRes);
   });
 });

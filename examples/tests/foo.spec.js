@@ -1,12 +1,18 @@
 import { Selector } from 'testcafe';
+import { PublicReportingAPI } from '@reportportal/agent-js-testcafe/build/src/publicReportingAPI';
 
-fixture`Getting Started`.page`http://devexpress.github.io/testcafe/example
-`.meta({
-  description: 'first suit description',
-  attributes: [{ key: 'key', value: 'value' }, { value: 'value' }],
-});
+fixture`Getting Started`.page`http://devexpress.github.io/testcafe/example`
+  .before(() => {
+    PublicReportingAPI.setLaunchStatusCancelled();
+    PublicReportingAPI.setStatusInterrupted();
+  })
+  .meta({
+    description: 'first suit description',
+    attributes: [{ key: 'key', value: 'value' }, { value: 'value' }],
+  });
 
 test('My first test', async (page) => {
+  PublicReportingAPI.setStatusInfo();
   await page
     .typeText('#developer-name', 'John Smith')
     .click('#submit-button')

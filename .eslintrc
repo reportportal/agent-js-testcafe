@@ -28,6 +28,7 @@
     "lines-between-class-members": 0,
     "import/no-extraneous-dependencies": 0,
     "func-names": 0,
-    "import/prefer-default-export": 0
+    "import/prefer-default-export": 0,
+    "dot-notation": 0
   }
 }

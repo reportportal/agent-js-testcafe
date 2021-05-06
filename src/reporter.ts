@@ -16,9 +16,10 @@
  */
 
 import RPClient from '@reportportal/client-javascript';
+import { EVENTS } from '@reportportal/client-javascript/lib/constants/events';
 import stripAnsi from 'strip-ansi';
-import { ReportPortalConfig, StartLaunchRQ, StartTestItemRQ, RPItem } from './models';
-import { getAgentInfo, getLastItem, getStartLaunchObj, getCodeRef } from './utils';
+import { ObjUniversal, ReportPortalConfig, RPItem, StartLaunchRQ, StartTestItemRQ } from './models';
+import { getAgentInfo, getCodeRef, getLastItem, getStartLaunchObj } from './utils';
 import { LOG_LEVELS, STATUSES, TEST_ITEM_TYPES } from './constants';
 
 interface TestItem {
@@ -34,13 +35,17 @@ export class Reporter {
   private launchId: string;
   private suiteIds: string[];
   private testItems: TestItem[];
-  private testData: { [name: string]: string };
+  private testData: ObjUniversal;
+  private customLaunchStatus: string;
+  private testItemStatuses: ObjUniversal;
 
   constructor(config: ReportPortalConfig) {
     this.noColors = false;
     this.suiteIds = [];
     this.testItems = [];
     this.testData = {};
+    this.customLaunchStatus = '';
+    this.testItemStatuses = {};
 
     const agentInfo = getAgentInfo();
 
@@ -48,7 +53,13 @@ export class Reporter {
     this.client = new RPClient(config, agentInfo);
   }
 
-  reportTaskStart(startTime: number, userAgents: any, testCount: number): void {
+  registerRPListeners(): void {
+    process.on(EVENTS.SET_LAUNCH_STATUS, this.setLaunchStatus.bind(this));
+    process.on(EVENTS.SET_STATUS, this.setStatus.bind(this));
+  }
+
+  reportTaskStart(startTime: number, userAgents: string[], testCount: number): void {
+    this.registerRPListeners();
     this.startTime = startTime;
     const startLaunchObj: StartLaunchRQ = getStartLaunchObj({ startTime }, this.config);
 
@@ -88,7 +99,7 @@ export class Reporter {
   reportTestDone(name: string, testRunInfo: any): void {
     const hasError = !!testRunInfo.errs.length;
     const testItemId = this.testItems.find((item) => item.name === name).id;
-    let status = STATUSES.PASSED;
+    let status: STATUSES | string = STATUSES.PASSED;
     let withoutIssue;
     if (testRunInfo.skipped) {
       status = STATUSES.SKIPPED;
@@ -97,25 +108,33 @@ export class Reporter {
       status = STATUSES.FAILED;
       this.sendLogsOnFail(testRunInfo.errs, testItemId);
     }
+
     const finishTestItemObj = {
-      status,
+      status: this.testItemStatuses[testItemId] || status,
       ...(withoutIssue && { issue: { issueType: 'NOT_ISSUE' } }),
     };
     this.client.finishTestItem(testItemId, finishTestItemObj);
     this.testItems = this.testItems.filter((item) => item.id !== testItemId);
   }
 
-  reportTaskDone(endTime: number, passed: any, warnings: any): void {
+  reportTaskDone(endTime: number, passed: number, warnings: string[]): void {
     this.finishSuites();
-    this.client.finishLaunch(this.launchId, { endTime });
+    this.client.finishLaunch(this.launchId, {
+      endTime,
+      ...(this.customLaunchStatus && { status: this.customLaunchStatus }),
+    });
     this.launchId = null;
+    this.customLaunchStatus = '';
   }
 
   finishSuites(): void {
     this.suiteIds.forEach((suiteId) => {
-      this.client.finishTestItem(suiteId, {});
+      const finishSuiteObj =
+        (this.testItemStatuses[suiteId] && { status: this.testItemStatuses[suiteId] }) || {};
+      this.client.finishTestItem(suiteId, finishSuiteObj);
     });
     this.testData = {};
+    this.testItemStatuses = {};
   }
 
   sendLogsOnFail(errors: any, testItemId: string): void {
@@ -126,5 +145,25 @@ export class Reporter {
         message: stripAnsi(this.formatError(error)),
       });
     });
+  }
+
+  setLaunchStatus(status: string): void {
+    this.customLaunchStatus = status;
+  }
+
+  getCurrentSuiteId(): string {
+    return this.suiteIds.length ? this.suiteIds[this.suiteIds.length - 1] : undefined;
+  }
+
+  getCurrentTestItemId(): string {
+    return (
+      (this.testItems.length && this.testItems[this.testItems.length - 1].id) ||
+      this.getCurrentSuiteId()
+    );
+  }
+
+  setStatus({ status }: ObjUniversal): void {
+    const testItemId = this.getCurrentTestItemId();
+    this.testItemStatuses[testItemId] = status;
   }
 }

@@ -17,11 +17,11 @@
 
 import path from 'path';
 import { version as pjsonVersion, name as pjsonName } from '../package.json';
-import { Attribute, StartLaunchRQ, ReportPortalConfig } from './models';
+import { Attribute, StartLaunchRQ, ReportPortalConfig, ObjUniversal } from './models';
 
 export const getLastItem = (items: any[] = []): any => items[items.length - 1];
 
-export const getAgentInfo = () => ({
+export const getAgentInfo = (): ObjUniversal => ({
   version: pjsonVersion,
   name: pjsonName,
 });
