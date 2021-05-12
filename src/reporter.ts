@@ -17,6 +17,7 @@
 
 import RPClient from '@reportportal/client-javascript';
 import stripAnsi from 'strip-ansi';
+import { EVENTS } from '@reportportal/client-javascript/lib/constants/events';
 import { ReportPortalConfig, StartLaunchRQ, StartTestItemRQ, RPItem } from './models';
 import { getAgentInfo, getLastItem, getStartLaunchObj, getCodeRef } from './utils';
 import { LOG_LEVELS, STATUSES, TEST_ITEM_TYPES } from './constants';
@@ -35,17 +36,38 @@ export class Reporter {
   private suiteIds: string[];
   private testItems: TestItem[];
   private testData: { [name: string]: string };
+  private testCaseIds: Map<string, string>;
 
   constructor(config: ReportPortalConfig) {
     this.noColors = false;
     this.suiteIds = [];
     this.testItems = [];
     this.testData = {};
+    this.testCaseIds = new Map<string, string>();
 
     const agentInfo = getAgentInfo();
 
     this.config = config;
     this.client = new RPClient(config, agentInfo);
+    this.registerRPListeners();
+  }
+
+  registerRPListeners(): void {
+    process.on(EVENTS.SET_TEST_CASE_ID, this.reportSetTestCaseId.bind(this));
+  }
+
+  getCurrentSuiteId(): string {
+    return getLastItem(this.suiteIds);
+  }
+
+  getCurrentTestItemId(): string {
+    const lastTest = getLastItem(this.testItems);
+    return lastTest ? lastTest.id : this.getCurrentSuiteId();
+  }
+
+  reportSetTestCaseId({ testCaseId }: { testCaseId: string }): Map<string, string> {
+    const testItemId = this.getCurrentTestItemId();
+    return this.testCaseIds.set(testItemId, testCaseId);
   }
 
   reportTaskStart(startTime: number, userAgents: any, testCount: number): void {
@@ -88,6 +110,7 @@ export class Reporter {
   reportTestDone(name: string, testRunInfo: any): void {
     const hasError = !!testRunInfo.errs.length;
     const testItemId = this.testItems.find((item) => item.name === name).id;
+    const testCaseId = this.testCaseIds.get(testItemId);
     let status = STATUSES.PASSED;
     let withoutIssue;
     if (testRunInfo.skipped) {
@@ -100,9 +123,10 @@ export class Reporter {
     const finishTestItemObj = {
       status,
       ...(withoutIssue && { issue: { issueType: 'NOT_ISSUE' } }),
+      ...(testCaseId && { testCaseId }),
     };
     this.client.finishTestItem(testItemId, finishTestItemObj);
-    this.testItems = this.testItems.filter((item) => item.id !== testItemId);
+    this.testItems.pop();
   }
 
   reportTaskDone(endTime: number, passed: any, warnings: any): void {
@@ -113,7 +137,8 @@ export class Reporter {
 
   finishSuites(): void {
     this.suiteIds.forEach((suiteId) => {
-      this.client.finishTestItem(suiteId, {});
+      const suiteTestCaseId = this.testCaseIds.get(suiteId);
+      this.client.finishTestItem(suiteId, { testCaseId: suiteTestCaseId });
     });
     this.testData = {};
   }
