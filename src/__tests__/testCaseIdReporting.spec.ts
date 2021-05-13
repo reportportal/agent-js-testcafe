@@ -27,7 +27,6 @@ describe('test case id reporting', function () {
 
   afterEach(function () {
     reporter.testItems = [];
-    reporter.testCaseIds.clear();
     jest.clearAllMocks();
   });
 
@@ -38,11 +37,11 @@ describe('test case id reporting', function () {
     };
     reporter.testItems.push(currentTest);
     const testCaseId = 'test_case_id';
-    const expectedDescriptionsMap = { "testItemId": "test_case_id" }
+    const expectedDescriptions = [{ id: "testItemId", name: "test", testCaseId: "test_case_id" }]
 
     reporter.setTestCaseId({ testCaseId });
 
-    expect(reporter.testData).toEqual(expectedDescriptionsMap);
+    expect(reporter.testItems).toEqual(expectedDescriptions);
   });
 
   it('onSetTestCaseId: should overwrite test case id for current test in the testCaseIds map', function () {
@@ -51,22 +50,25 @@ describe('test case id reporting', function () {
       id: 'testItemId',
     };
     reporter.testItems.push(currentTest);
-    reporter.testCaseIds.set('testItemId', 'old_test_case_id');
+    reporter.testItems[0].testCaseId = 'old_test_case_id';
     const newTestCaseId = 'new_test_case_id';
 
-    const expectedDescriptionsMap = { "testItemId": "new_test_case_id" }
+    const expectedDescriptions = [{
+      name: 'test',
+      id: 'testItemId', testCaseId: "new_test_case_id"
+    }]
 
     reporter.setTestCaseId({ testCaseId: newTestCaseId });
-    expect(reporter.testData).toEqual(expectedDescriptionsMap);
+    expect(reporter.testItems).toEqual(expectedDescriptions);
   });
 
   it('onSetTestCaseId: should set test case id for current suite in testCaseIds map', function () {
     const testCaseId = 'suite_test_case_id';
 
-    const expectedDescriptionsMap = { "tempSuiteId": "suite_test_case_id", "testItemId": "new_test_case_id" }
+    const expectedDescriptions = { "tempSuiteId": "suite_test_case_id" }
 
     reporter.setTestCaseId({ testCaseId });
 
-    expect(reporter.testData).toEqual(expectedDescriptionsMap);
+    expect(reporter.testData).toEqual(expectedDescriptions);
   });
 });

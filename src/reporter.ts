@@ -25,6 +25,7 @@ import { LOG_LEVELS, STATUSES, TEST_ITEM_TYPES } from './constants';
 interface TestItem {
   id: string;
   name: string;
+  testCaseId?: string;
 }
 
 export class Reporter {
@@ -64,7 +65,10 @@ export class Reporter {
 
   setTestCaseId({ testCaseId }: { testCaseId: string }): void {
     const testItemId = this.getCurrentTestItemId();
-    this.testData[testItemId] = testCaseId;
+    const lastTest = getLastItem(this.testItems);
+    this.suiteIds.includes(testItemId)
+      ? (this.testData[testItemId] = testCaseId)
+      : (lastTest.testCaseId = testCaseId);
   }
 
   reportTaskStart(startTime: number, userAgents: any, testCount: number): void {
@@ -108,7 +112,7 @@ export class Reporter {
   reportTestDone(name: string, testRunInfo: any): void {
     const hasError = !!testRunInfo.errs.length;
     const testItemId = this.testItems.find((item) => item.name === name).id;
-    const testCaseId = this.testData[testItemId];
+    const { testCaseId } = this.testItems.find((item) => item.id === testItemId);
     let status = STATUSES.PASSED;
     let withoutIssue;
     if (testRunInfo.skipped) {
