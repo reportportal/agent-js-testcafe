@@ -25,6 +25,7 @@ import { LOG_LEVELS, STATUSES, TEST_ITEM_TYPES } from './constants';
 interface TestItem {
   id: string;
   name: string;
+  status?: string;
 }
 
 export class Reporter {
@@ -57,8 +58,8 @@ export class Reporter {
   }
 
   unregisterRPListeners(): void {
-    process.removeAllListeners(EVENTS.SET_LAUNCH_STATUS);
-    process.removeAllListeners(EVENTS.SET_STATUS);
+    process.off(EVENTS.SET_LAUNCH_STATUS, this.setLaunchStatus.bind(this));
+    process.off(EVENTS.SET_STATUS, this.setStatus.bind(this));
   }
 
   reportTaskStart(startTime: number, userAgents: string[], testCount: number): void {
@@ -101,7 +102,9 @@ export class Reporter {
 
   reportTestDone(name: string, testRunInfo: any): void {
     const hasError = !!testRunInfo.errs.length;
-    const testItemId = this.testItems.find((item) => item.name === name).id;
+    const { status: customTestItemStatus, id: testItemId } = this.testItems.find(
+      (item) => item.name === name,
+    );
     let status: STATUSES | string = STATUSES.PASSED;
     let withoutIssue;
     if (testRunInfo.skipped) {
@@ -113,7 +116,7 @@ export class Reporter {
     }
 
     const finishTestItemObj = {
-      status: this.testData[testItemId] || status,
+      status: customTestItemStatus || status,
       ...(withoutIssue && { issue: { issueType: 'NOT_ISSUE' } }),
     };
     this.client.finishTestItem(testItemId, finishTestItemObj);
@@ -166,6 +169,10 @@ export class Reporter {
 
   setStatus({ status }: ObjUniversal): void {
     const testItemId = this.getCurrentTestItemId();
-    this.testData[testItemId] = status;
+    if (this.suiteIds.includes(testItemId)) {
+      this.testData[testItemId] = status;
+    } else {
+      this.testItems[this.testItems.findIndex((item) => item.id === testItemId)].status = status;
+    }
   }
 }

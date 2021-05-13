@@ -50,10 +50,16 @@ describe('test listeners', () => {
       });
 
       test('emit EVENTS.SET_STATUS for test', () => {
-        reporter['testItems'] = [{ name: 'test_name', id: 'tempTestItemId' }];
+        reporter['testItems'] = [{ name: 'test_name', id: 'testItemId' }];
         (process as NodeJS.EventEmitter).emit(EVENTS.SET_STATUS, { status: 'warn' });
 
-        expect(reporter['testData']).toEqual({ tempTestItemId: 'warn' });
+        expect(reporter['testItems']).toEqual([
+          {
+            id: 'testItemId',
+            name: 'test_name',
+            status: 'warn',
+          },
+        ]);
       });
     });
   });
