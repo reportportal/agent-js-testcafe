@@ -111,8 +111,7 @@ export class Reporter {
 
   reportTestDone(name: string, testRunInfo: any): void {
     const hasError = !!testRunInfo.errs.length;
-    const testItemId = this.testItems.find((item) => item.name === name).id;
-    const { testCaseId } = this.testItems.find((item) => item.id === testItemId);
+    const { id: testItemId, testCaseId } = this.testItems.find((item) => item.name === name);
     let status = STATUSES.PASSED;
     let withoutIssue;
     if (testRunInfo.skipped) {

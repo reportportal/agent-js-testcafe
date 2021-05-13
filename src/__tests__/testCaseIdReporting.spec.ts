@@ -50,7 +50,7 @@ describe('test case id reporting', function () {
       id: 'testItemId',
     };
     reporter.testItems.push(currentTest);
-    reporter.testItems[0].testCaseId = 'old_test_case_id';
+    currentTest.testCaseId = 'old_test_case_id';
     const newTestCaseId = 'new_test_case_id';
 
     const expectedDescriptions = [{
