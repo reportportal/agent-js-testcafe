@@ -38,11 +38,11 @@ describe('test case id reporting', function () {
     };
     reporter.testItems.push(currentTest);
     const testCaseId = 'test_case_id';
-    const expectedDescriptionsMap = new Map([['testItemId', testCaseId]]);
+    const expectedDescriptionsMap = { "testItemId": "test_case_id" }
 
-    reporter.reportSetTestCaseId({ testCaseId });
+    reporter.setTestCaseId({ testCaseId });
 
-    expect(reporter.testCaseIds).toEqual(expectedDescriptionsMap);
+    expect(reporter.testData).toEqual(expectedDescriptionsMap);
   });
 
   it('onSetTestCaseId: should overwrite test case id for current test in the testCaseIds map', function () {
@@ -54,19 +54,19 @@ describe('test case id reporting', function () {
     reporter.testCaseIds.set('testItemId', 'old_test_case_id');
     const newTestCaseId = 'new_test_case_id';
 
-    const expectedDescriptionsMap = new Map([['testItemId', newTestCaseId]]);
+    const expectedDescriptionsMap = { "testItemId": "new_test_case_id" }
 
-    reporter.reportSetTestCaseId({ testCaseId: newTestCaseId });
-    expect(reporter.testCaseIds).toEqual(expectedDescriptionsMap);
+    reporter.setTestCaseId({ testCaseId: newTestCaseId });
+    expect(reporter.testData).toEqual(expectedDescriptionsMap);
   });
 
   it('onSetTestCaseId: should set test case id for current suite in testCaseIds map', function () {
     const testCaseId = 'suite_test_case_id';
 
-    const expectedDescriptionsMap = new Map([['tempSuiteId', testCaseId]]);
+    const expectedDescriptionsMap = { "tempSuiteId": "suite_test_case_id", "testItemId": "new_test_case_id" }
 
-    reporter.reportSetTestCaseId({ testCaseId });
+    reporter.setTestCaseId({ testCaseId });
 
-    expect(reporter.testCaseIds).toEqual(expectedDescriptionsMap);
+    expect(reporter.testData).toEqual(expectedDescriptionsMap);
   });
 });

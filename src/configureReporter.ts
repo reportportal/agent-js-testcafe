@@ -15,5 +15,8 @@
  *
  */
 
-export { configureReporter } from './configureReporter';
-export { PublicReportingAPI } from './publicReportingAPI';
+import { Reporter } from './reporter';
+import { ReportPortalConfig } from './models';
+
+export const configureReporter = (config: ReportPortalConfig) => (): Reporter =>
+  new Reporter(config);

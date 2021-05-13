@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-const { PublicReportingAPI } = require('@reportportal/agent-js-testcafe/src/publicReportingAPI');
+const { PublicReportingAPI } = require('@reportportal/agent-js-testcafe');
 
 fixture`testCaseId for suite/test`.before(() => {
   PublicReportingAPI.setTestCaseId('TestCaseIdForTheSuite');

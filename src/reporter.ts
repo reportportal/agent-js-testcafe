@@ -36,24 +36,21 @@ export class Reporter {
   private suiteIds: string[];
   private testItems: TestItem[];
   private testData: { [name: string]: string };
-  private testCaseIds: Map<string, string>;
 
   constructor(config: ReportPortalConfig) {
     this.noColors = false;
     this.suiteIds = [];
     this.testItems = [];
     this.testData = {};
-    this.testCaseIds = new Map<string, string>();
 
     const agentInfo = getAgentInfo();
 
     this.config = config;
     this.client = new RPClient(config, agentInfo);
-    this.registerRPListeners();
   }
 
   registerRPListeners(): void {
-    process.on(EVENTS.SET_TEST_CASE_ID, this.reportSetTestCaseId.bind(this));
+    process.on(EVENTS.SET_TEST_CASE_ID, this.setTestCaseId.bind(this));
   }
 
   getCurrentSuiteId(): string {
@@ -65,12 +62,13 @@ export class Reporter {
     return lastTest ? lastTest.id : this.getCurrentSuiteId();
   }
 
-  reportSetTestCaseId({ testCaseId }: { testCaseId: string }): Map<string, string> {
+  setTestCaseId({ testCaseId }: { testCaseId: string }): void {
     const testItemId = this.getCurrentTestItemId();
-    return this.testCaseIds.set(testItemId, testCaseId);
+    this.testData[testItemId] = testCaseId;
   }
 
   reportTaskStart(startTime: number, userAgents: any, testCount: number): void {
+    this.registerRPListeners();
     this.startTime = startTime;
     const startLaunchObj: StartLaunchRQ = getStartLaunchObj({ startTime }, this.config);
 
@@ -110,7 +108,7 @@ export class Reporter {
   reportTestDone(name: string, testRunInfo: any): void {
     const hasError = !!testRunInfo.errs.length;
     const testItemId = this.testItems.find((item) => item.name === name).id;
-    const testCaseId = this.testCaseIds.get(testItemId);
+    const testCaseId = this.testData[testItemId];
     let status = STATUSES.PASSED;
     let withoutIssue;
     if (testRunInfo.skipped) {
@@ -126,7 +124,7 @@ export class Reporter {
       ...(testCaseId && { testCaseId }),
     };
     this.client.finishTestItem(testItemId, finishTestItemObj);
-    this.testItems.pop();
+    this.testItems = this.testItems.filter((item) => item.id !== testItemId);
   }
 
   reportTaskDone(endTime: number, passed: any, warnings: any): void {
@@ -137,8 +135,10 @@ export class Reporter {
 
   finishSuites(): void {
     this.suiteIds.forEach((suiteId) => {
-      const suiteTestCaseId = this.testCaseIds.get(suiteId);
-      this.client.finishTestItem(suiteId, { testCaseId: suiteTestCaseId });
+      const suiteTestCaseId = this.testData[suiteId];
+      this.client.finishTestItem(suiteId, {
+        ...(suiteTestCaseId && { testCaseId: suiteTestCaseId }),
+      });
     });
     this.testData = {};
   }
