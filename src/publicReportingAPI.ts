@@ -17,6 +17,8 @@
 
 import ClientPublicReportingAPI from '@reportportal/client-javascript/lib/publicReportingAPI';
 import { RP_STATUSES } from '@reportportal/client-javascript/lib/constants/statuses';
+import { LOG_LEVELS } from './constants';
+import { Attachment } from './models';
 
 export const PublicReportingAPI = {
   setLaunchStatus: ClientPublicReportingAPI.setLaunchStatus,
@@ -41,4 +43,36 @@ export const PublicReportingAPI = {
   setStatusWarn: (): void => ClientPublicReportingAPI.setStatus(RP_STATUSES.WARN),
   setTestCaseId: ClientPublicReportingAPI.setTestCaseId,
   addAttributes: ClientPublicReportingAPI.addAttributes,
+
+  log: (level: LOG_LEVELS | string = LOG_LEVELS.INFO, message = '', file?: Attachment): void =>
+    ClientPublicReportingAPI.addLog({ level, file, message }),
+  launchLog: (
+    level: LOG_LEVELS | string = LOG_LEVELS.INFO,
+    message = '',
+    file?: Attachment,
+  ): void => ClientPublicReportingAPI.addLaunchLog({ level, message, file }),
+  trace: (message: string, file?: Attachment): void =>
+    PublicReportingAPI.log(LOG_LEVELS.TRACE, message, file),
+  debug: (message: string, file?: Attachment): void =>
+    PublicReportingAPI.log(LOG_LEVELS.DEBUG, message, file),
+  info: (message: string, file?: Attachment): void =>
+    PublicReportingAPI.log(LOG_LEVELS.INFO, message, file),
+  warn: (message: string, file?: Attachment): void =>
+    PublicReportingAPI.log(LOG_LEVELS.WARN, message, file),
+  error: (message: string, file?: Attachment): void =>
+    PublicReportingAPI.log(LOG_LEVELS.ERROR, message, file),
+  fatal: (message: string, file?: Attachment): void =>
+    PublicReportingAPI.log(LOG_LEVELS.FATAL, message, file),
+  launchTrace: (message: string, file?: Attachment): void =>
+    PublicReportingAPI.launchLog(LOG_LEVELS.TRACE, message, file),
+  launchDebug: (message: string, file?: Attachment): void =>
+    PublicReportingAPI.launchLog(LOG_LEVELS.DEBUG, message, file),
+  launchInfo: (message: string, file?: Attachment): void =>
+    PublicReportingAPI.launchLog(LOG_LEVELS.INFO, message, file),
+  launchWarn: (message: string, file?: Attachment): void =>
+    PublicReportingAPI.launchLog(LOG_LEVELS.WARN, message, file),
+  launchError: (message: string, file?: Attachment): void =>
+    PublicReportingAPI.launchLog(LOG_LEVELS.ERROR, message, file),
+  launchFatal: (message: string, file?: Attachment): void =>
+    PublicReportingAPI.launchLog(LOG_LEVELS.FATAL, message, file),
 };
