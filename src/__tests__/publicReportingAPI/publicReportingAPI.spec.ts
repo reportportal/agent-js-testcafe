@@ -16,16 +16,23 @@
  */
 
 import ClientPublicReportingAPI from '@reportportal/client-javascript/lib/publicReportingAPI';
-import {
-  publicReportingAPILaunchStatusMethods,
-  publicReportingAPIStatusMethods,
-} from '../mocks/publicReportingAPIMock';
 import { PublicReportingAPI } from '../../publicReportingAPI';
 
 describe('PublicReportingAPI', () => {
-  describe('Item status reporting', function() {
+  describe('Item status reporting', () => {
+    const publicReportingAPIStatusMethods = [
+      { method: 'setStatusPassed', status: 'passed' },
+      { method: 'setStatusFailed', status: 'failed' },
+      { method: 'setStatusSkipped', status: 'skipped' },
+      { method: 'setStatusStopped', status: 'stopped' },
+      { method: 'setStatusInterrupted', status: 'interrupted' },
+      { method: 'setStatusCancelled', status: 'cancelled' },
+      { method: 'setStatusInfo', status: 'info' },
+      { method: 'setStatusWarn', status: 'warn' },
+    ];
+
     publicReportingAPIStatusMethods.forEach(({ method, status }) => {
-      it(`${method}: should call ${method} method with "${status}" status`, function() {
+      test(`${method}: should call ${method} method with "${status}" status`, () => {
         const spySetStatus = jest
           .spyOn(ClientPublicReportingAPI, 'setStatus')
           .mockImplementation(() => {});
@@ -37,9 +44,20 @@ describe('PublicReportingAPI', () => {
     });
   });
 
-  describe('Launch status reporting', function() {
+  describe('Launch status reporting', () => {
+    const publicReportingAPILaunchStatusMethods = [
+      { method: 'setLaunchStatusPassed', status: 'passed' },
+      { method: 'setLaunchStatusFailed', status: 'failed' },
+      { method: 'setLaunchStatusSkipped', status: 'skipped' },
+      { method: 'setLaunchStatusStopped', status: 'stopped' },
+      { method: 'setLaunchStatusInterrupted', status: 'interrupted' },
+      { method: 'setLaunchStatusCancelled', status: 'cancelled' },
+      { method: 'setLaunchStatusInfo', status: 'info' },
+      { method: 'setLaunchStatusWarn', status: 'warn' },
+    ];
+
     publicReportingAPILaunchStatusMethods.forEach(({ method, status }) => {
-      it(`${method}: should call ${method} method with "${status}" status`, function() {
+      test(`${method}: should call ${method} method with "${status}" status`, () => {
         const spySetStatus = jest
           .spyOn(ClientPublicReportingAPI, 'setLaunchStatus')
           .mockImplementation(() => {});

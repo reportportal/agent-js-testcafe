@@ -16,7 +16,7 @@
  */
 
 const createTestCafe = require('testcafe');
-const configureReporter = require('@reportportal/agent-js-testcafe');
+const { configureReporter } = require('@reportportal/agent-js-testcafe');
 const rpConfig = require('./rp.json');
 
 async function start() {

@@ -15,20 +15,8 @@
  *
  */
 
-import { setupReporter } from '../mocks/ReporterMock';
+import { Reporter } from './reporter';
+import { ReportPortalConfig } from './models';
 
-describe('finish report suite', () => {
-  const reporter = setupReporter(['launchId', 'suiteIds']);
-  const endTime = Date.now();
-
-  reporter.reportTaskDone(endTime, undefined, undefined);
-
-  test('client.finishTestItem should be called', () => {
-    expect(reporter['client'].finishTestItem).toHaveBeenCalledTimes(1);
-    expect(reporter['client'].finishTestItem).toHaveBeenCalledWith('tempTestItemId', {});
-  });
-
-  test('testData should be reset', () => {
-    expect(reporter['testData']).toEqual({});
-  });
-});
+export const configureReporter = (config: ReportPortalConfig) => (): Reporter =>
+  new Reporter(config);

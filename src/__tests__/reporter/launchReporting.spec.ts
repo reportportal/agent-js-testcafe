@@ -22,9 +22,6 @@ import { getStartLaunchObj } from '../../utils';
 import { config } from '../mocks/configMock';
 
 describe('start report launch', () => {
-  afterAll(() => {
-    process.removeAllListeners();
-  });
   const reporter = setupReporter();
   const startTime = Date.now();
   const startLaunchObj: StartLaunchRQ = getStartLaunchObj({ startTime }, config);
@@ -33,7 +30,7 @@ describe('start report launch', () => {
   reporter.reportTaskStart(startTime, undefined, undefined);
 
   test('listeners should be added', () => {
-    expect(process.eventNames()).toEqual(listeners);
+    expect(process.eventNames()).toEqual(expect.arrayContaining(listeners));
   });
 
   test('client.startLaunch should be called with corresponding params', () => {

@@ -37,7 +37,6 @@ export class Reporter {
   private testItems: TestItem[];
   private testData: ObjUniversal;
   private customLaunchStatus: string;
-  private testItemStatuses: ObjUniversal;
 
   constructor(config: ReportPortalConfig) {
     this.noColors = false;
@@ -45,7 +44,6 @@ export class Reporter {
     this.testItems = [];
     this.testData = {};
     this.customLaunchStatus = '';
-    this.testItemStatuses = {};
 
     const agentInfo = getAgentInfo();
 
@@ -56,6 +54,11 @@ export class Reporter {
   registerRPListeners(): void {
     process.on(EVENTS.SET_LAUNCH_STATUS, this.setLaunchStatus.bind(this));
     process.on(EVENTS.SET_STATUS, this.setStatus.bind(this));
+  }
+
+  unregisterRPListeners(): void {
+    process.removeAllListeners(EVENTS.SET_LAUNCH_STATUS);
+    process.removeAllListeners(EVENTS.SET_STATUS);
   }
 
   reportTaskStart(startTime: number, userAgents: string[], testCount: number): void {
@@ -110,7 +113,7 @@ export class Reporter {
     }
 
     const finishTestItemObj = {
-      status: this.testItemStatuses[testItemId] || status,
+      status: this.testData[testItemId] || status,
       ...(withoutIssue && { issue: { issueType: 'NOT_ISSUE' } }),
     };
     this.client.finishTestItem(testItemId, finishTestItemObj);
@@ -125,16 +128,15 @@ export class Reporter {
     });
     this.launchId = null;
     this.customLaunchStatus = '';
+    this.unregisterRPListeners();
   }
 
   finishSuites(): void {
     this.suiteIds.forEach((suiteId) => {
-      const finishSuiteObj =
-        (this.testItemStatuses[suiteId] && { status: this.testItemStatuses[suiteId] }) || {};
+      const finishSuiteObj = (this.testData[suiteId] && { status: this.testData[suiteId] }) || {};
       this.client.finishTestItem(suiteId, finishSuiteObj);
     });
     this.testData = {};
-    this.testItemStatuses = {};
   }
 
   sendLogsOnFail(errors: any, testItemId: string): void {
@@ -164,6 +166,6 @@ export class Reporter {
 
   setStatus({ status }: ObjUniversal): void {
     const testItemId = this.getCurrentTestItemId();
-    this.testItemStatuses[testItemId] = status;
+    this.testData[testItemId] = status;
   }
 }

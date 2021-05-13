@@ -49,7 +49,7 @@ describe('finish report launch', () => {
     });
   });
 
-  test('launchId, customLaunchStatus. testItemStatuses should be reset', () => {
+  test('launchId, customLaunchStatus should be reset', () => {
     reporter.reportTaskDone(endTime, undefined, undefined);
 
     expect(reporter['launchId']).toBeNull();

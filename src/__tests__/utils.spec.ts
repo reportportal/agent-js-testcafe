@@ -96,7 +96,7 @@ describe('getStartLaunchObj', () => {
   const launchObj: StartLaunchRQ = {};
   const systemAttributes = getSystemAttributes(config.skippedIssue);
 
-  test('', () => {
+  test('pass config without attributes to getStartLaunchObj', () => {
     const expectedRes = {
       ...launchObj,
       attributes: systemAttributes,
@@ -109,7 +109,7 @@ describe('getStartLaunchObj', () => {
     expect(getStartLaunchObj(launchObj, config)).toEqual(expectedRes);
   });
 
-  test('', () => {
+  test('pass config with attributes to getStartLaunchObj', () => {
     config.attributes = [{ key: 'key', value: 'value' }];
     const expectedRes = {
       ...launchObj,

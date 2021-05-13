@@ -1,5 +1,5 @@
 import { Selector } from 'testcafe';
-import { PublicReportingAPI } from '@reportportal/agent-js-testcafe/build/src/publicReportingAPI';
+import { PublicReportingAPI } from '@reportportal/agent-js-testcafe';
 
 fixture`Getting Started`.page`http://devexpress.github.io/testcafe/example`
   .before(() => {

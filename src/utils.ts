@@ -19,9 +19,9 @@ import path from 'path';
 import { version as pjsonVersion, name as pjsonName } from '../package.json';
 import { Attribute, StartLaunchRQ, ReportPortalConfig, ObjUniversal } from './models';
 
-export const getLastItem = (items: any[] = []): any => items[items.length - 1];
+export const getLastItem = <T>(items: T[] = []): T => items[items.length - 1];
 
-export const getAgentInfo = (): ObjUniversal => ({
+export const getAgentInfo = (): { version: string; name: string } => ({
   version: pjsonVersion,
   name: pjsonName,
 });
@@ -55,7 +55,10 @@ export const getStartLaunchObj = (
 
   return {
     ...launchObj,
-    attributes: config.attributes ? config.attributes.concat(systemAttributes) : systemAttributes,
+    attributes:
+      config.attributes && config.attributes.length
+        ? config.attributes.concat(systemAttributes)
+        : systemAttributes,
     description: config.description,
     rerun: config.rerun,
     rerunOf: config.rerunOf,

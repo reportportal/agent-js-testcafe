@@ -29,12 +29,8 @@ describe('test listeners', () => {
     reporter.reportTaskStart(startTime, undefined, undefined);
   });
 
-  afterAll(() => {
-    process.removeAllListeners();
-  });
-
   test('listeners should be added', () => {
-    expect(process.eventNames()).toEqual(listeners);
+    expect(process.eventNames()).toEqual(expect.arrayContaining(listeners));
   });
 
   describe('check listeners', () => {
@@ -50,14 +46,14 @@ describe('test listeners', () => {
       test('emit EVENTS.SET_STATUS for suite', () => {
         (process as NodeJS.EventEmitter).emit(EVENTS.SET_STATUS, { status: 'info' });
 
-        expect(reporter['testItemStatuses']).toEqual({ tempTestItemId: 'info' });
+        expect(reporter['testData']).toEqual({ tempTestItemId: 'info' });
       });
 
       test('emit EVENTS.SET_STATUS for test', () => {
         reporter['testItems'] = [{ name: 'test_name', id: 'tempTestItemId' }];
         (process as NodeJS.EventEmitter).emit(EVENTS.SET_STATUS, { status: 'warn' });
 
-        expect(reporter['testItemStatuses']).toEqual({ tempTestItemId: 'warn' });
+        expect(reporter['testData']).toEqual({ tempTestItemId: 'warn' });
       });
     });
   });

@@ -19,6 +19,7 @@ import ClientPublicReportingAPI from '@reportportal/client-javascript/lib/public
 import { RP_STATUSES } from '@reportportal/client-javascript/lib/constants/statuses';
 
 export const PublicReportingAPI = {
+  setLaunchStatus: ClientPublicReportingAPI.setLaunchStatus,
   setLaunchStatusPassed: (): void => ClientPublicReportingAPI.setLaunchStatus(RP_STATUSES.PASSED),
   setLaunchStatusFailed: (): void => ClientPublicReportingAPI.setLaunchStatus(RP_STATUSES.FAILED),
   setLaunchStatusSkipped: (): void => ClientPublicReportingAPI.setLaunchStatus(RP_STATUSES.SKIPPED),
@@ -29,7 +30,7 @@ export const PublicReportingAPI = {
     ClientPublicReportingAPI.setLaunchStatus(RP_STATUSES.CANCELLED),
   setLaunchStatusInfo: (): void => ClientPublicReportingAPI.setLaunchStatus(RP_STATUSES.INFO),
   setLaunchStatusWarn: (): void => ClientPublicReportingAPI.setLaunchStatus(RP_STATUSES.WARN),
-
+  setStatus: ClientPublicReportingAPI.setStatus,
   setStatusPassed: (): void => ClientPublicReportingAPI.setStatus(RP_STATUSES.PASSED),
   setStatusFailed: (): void => ClientPublicReportingAPI.setStatus(RP_STATUSES.FAILED),
   setStatusSkipped: (): void => ClientPublicReportingAPI.setStatus(RP_STATUSES.SKIPPED),
