@@ -28,11 +28,11 @@ interface TestItem {
   status?: string;
 }
 
-interface Suites {
+interface Suite {
   id: string;
   name: string;
   path?: string;
-  customStatus?: string;
+  status?: string;
 }
 
 export class Reporter {
@@ -41,7 +41,7 @@ export class Reporter {
   private client: RPClient;
   private startTime: number;
   private launchId: string;
-  private suites: Suites[];
+  private suites: Suite[];
   private testItems: TestItem[];
   private customLaunchStatus: string;
 
@@ -138,8 +138,8 @@ export class Reporter {
   }
 
   finishSuites(): void {
-    this.suites.forEach(({ id, customStatus }) => {
-      const finishSuiteObj = (customStatus && { status: customStatus }) || {};
+    this.suites.forEach(({ id, status }) => {
+      const finishSuiteObj = (status && { status }) || {};
       this.client.finishTestItem(id, finishSuiteObj);
     });
     this.suites = [];
@@ -170,9 +170,9 @@ export class Reporter {
 
   setStatus({ status }: ObjUniversal): void {
     const testItemId = this.getCurrentTestItemId();
-    if (this.suites.some(({ id }) => id === testItemId)) {
-      const idx = this.suites.findIndex(({ id }) => id === testItemId);
-      this.suites[idx].customStatus = status;
+    const suite = this.suites.find(({ id }) => id === testItemId);
+    if (suite) {
+      suite.status = status;
     } else {
       this.testItems[this.testItems.findIndex((item) => item.id === testItemId)].status = status;
     }

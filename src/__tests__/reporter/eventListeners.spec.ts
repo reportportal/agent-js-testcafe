@@ -51,7 +51,7 @@ describe('test listeners', () => {
             id: 'tempSuiteItemId',
             name: 'suite_name',
             path: filePath,
-            customStatus: 'info',
+            status: 'info',
           },
         ]);
       });
