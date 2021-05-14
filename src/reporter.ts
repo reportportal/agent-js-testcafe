@@ -20,12 +20,15 @@ import { EVENTS } from '@reportportal/client-javascript/lib/constants/events';
 import stripAnsi from 'strip-ansi';
 import { ObjUniversal, ReportPortalConfig, RPItem, StartLaunchRQ, StartTestItemRQ } from './models';
 import { getAgentInfo, getCodeRef, getLastItem, getStartLaunchObj } from './utils';
+import { Attribute } from './models/common';
 import { LOG_LEVELS, STATUSES, TEST_ITEM_TYPES } from './constants';
 
 interface TestItem {
   id: string;
   name: string;
   status?: string;
+  testCaseId?: string;
+  attributes?: Attribute[];
 }
 
 interface Suite {
@@ -33,6 +36,8 @@ interface Suite {
   name: string;
   path?: string;
   status?: string;
+  testCaseId?: string;
+  attributes?: Attribute[];
 }
 
 export class Reporter {
@@ -60,11 +65,53 @@ export class Reporter {
   registerRPListeners(): void {
     process.on(EVENTS.SET_LAUNCH_STATUS, this.setLaunchStatus.bind(this));
     process.on(EVENTS.SET_STATUS, this.setStatus.bind(this));
+    process.on(EVENTS.SET_TEST_CASE_ID, this.setTestCaseId.bind(this));
+    process.on(EVENTS.ADD_ATTRIBUTES, this.addAttributes.bind(this));
   }
 
   unregisterRPListeners(): void {
     process.off(EVENTS.SET_LAUNCH_STATUS, this.setLaunchStatus.bind(this));
     process.off(EVENTS.SET_STATUS, this.setStatus.bind(this));
+    process.off(EVENTS.SET_TEST_CASE_ID, this.setTestCaseId.bind(this));
+    process.off(EVENTS.ADD_ATTRIBUTES, this.addAttributes.bind(this));
+  }
+
+  getCurrentSuiteId(): string {
+    return getLastItem(this.suites).id;
+  }
+
+  getCurrentTestItemId(): string {
+    const lastTest = getLastItem(this.testItems);
+    return lastTest ? lastTest.id : this.getCurrentSuiteId();
+  }
+
+  setTestCaseId({ testCaseId }: { testCaseId: string }): void {
+    const testItemId = this.getCurrentTestItemId();
+    const suite = this.suites.find(({ id }) => id === testItemId);
+    if (suite) {
+      suite.testCaseId = testCaseId;
+    } else {
+      this.testItems[
+        this.testItems.findIndex((item) => item.id === testItemId)
+      ].testCaseId = testCaseId;
+    }
+  }
+
+  addAttributes({ attributes }: { attributes: Attribute[] }): void {
+    if (!attributes || !(attributes instanceof Array)) {
+      console.error('Attributes should be instance of Array');
+      return;
+    }
+    const testItemId = this.getCurrentTestItemId();
+    const suite = this.suites.find(({ id }) => id === testItemId);
+    if (suite) {
+      suite.attributes = (suite.attributes || []).concat(attributes);
+    } else {
+      const currentTest = this.testItems[
+        this.testItems.findIndex((item) => item.id === testItemId)
+      ];
+      currentTest.attributes = (currentTest.attributes || []).concat(attributes);
+    }
   }
 
   reportTaskStart(startTime: number, userAgents: string[], testCount: number): void {
@@ -105,9 +152,12 @@ export class Reporter {
 
   reportTestDone(name: string, testRunInfo: any): void {
     const hasError = !!testRunInfo.errs.length;
-    const { status: customTestItemStatus, id: testItemId } = this.testItems.find(
-      (item) => item.name === name,
-    );
+    const {
+      status: customTestItemStatus,
+      id: testItemId,
+      testCaseId,
+      attributes,
+    } = this.testItems.find((item) => item.name === name);
     let status: STATUSES | string = STATUSES.PASSED;
     let withoutIssue;
     if (testRunInfo.skipped) {
@@ -121,6 +171,8 @@ export class Reporter {
     const finishTestItemObj = {
       status: customTestItemStatus || status,
       ...(withoutIssue && { issue: { issueType: 'NOT_ISSUE' } }),
+      ...(testCaseId && { testCaseId }),
+      ...(attributes && { attributes }),
     };
     this.client.finishTestItem(testItemId, finishTestItemObj);
     this.testItems = this.testItems.filter((item) => item.id !== testItemId);
@@ -138,8 +190,13 @@ export class Reporter {
   }
 
   finishSuites(): void {
-    this.suites.forEach(({ id, status }) => {
-      const finishSuiteObj = (status && { status }) || {};
+    this.suites.forEach(({ id, status, testCaseId, attributes }) => {
+      const finishSuiteObj =
+        {
+          ...(status && { status }),
+          ...(testCaseId && { testCaseId }),
+          ...(attributes && { attributes }),
+        } || {};
       this.client.finishTestItem(id, finishSuiteObj);
     });
     this.suites = [];
@@ -157,15 +214,6 @@ export class Reporter {
 
   setLaunchStatus(status: string): void {
     this.customLaunchStatus = status;
-  }
-
-  getCurrentSuiteId(): string {
-    return getLastItem(this.suites).id;
-  }
-
-  getCurrentTestItemId(): string {
-    const lastTest = getLastItem(this.testItems);
-    return lastTest ? lastTest.id : this.getCurrentSuiteId();
   }
 
   setStatus({ status }: ObjUniversal): void {
