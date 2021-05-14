@@ -28,22 +28,27 @@ interface TestItem {
   status?: string;
 }
 
+interface Suites {
+  id: string;
+  name: string;
+  path?: string;
+  customStatus?: string;
+}
+
 export class Reporter {
   private noColors: boolean;
   private config: ReportPortalConfig;
   private client: RPClient;
   private startTime: number;
   private launchId: string;
-  private suiteIds: string[];
+  private suites: Suites[];
   private testItems: TestItem[];
-  private testData: ObjUniversal;
   private customLaunchStatus: string;
 
   constructor(config: ReportPortalConfig) {
     this.noColors = false;
-    this.suiteIds = [];
+    this.suites = [];
     this.testItems = [];
-    this.testData = {};
     this.customLaunchStatus = '';
 
     const agentInfo = getAgentInfo();
@@ -71,7 +76,6 @@ export class Reporter {
   }
 
   reportFixtureStart(name: string, path: string, meta: RPItem): void {
-    this.testData = { ...this.testData, path, suiteName: name };
     const codeRef = getCodeRef(path, name);
     const startSuiteObj: StartTestItemRQ = {
       name,
@@ -81,11 +85,11 @@ export class Reporter {
       codeRef,
     };
     const suiteId = this.client.startTestItem(startSuiteObj, this.launchId).tempId;
-    this.suiteIds.push(suiteId);
+    this.suites.push({ id: suiteId, path, name });
   }
 
   reportTestStart(name: string, testMeta: RPItem): void {
-    const { path, suiteName } = this.testData;
+    const { path, name: suiteName, id: parentId } = getLastItem(this.suites);
     const codeRef = getCodeRef(path, [suiteName, name]);
     const startTestObj: StartTestItemRQ = {
       name,
@@ -94,7 +98,6 @@ export class Reporter {
       attributes: testMeta.attributes,
       codeRef,
     };
-    const parentId = getLastItem(this.suiteIds);
     const stepId = this.client.startTestItem(startTestObj, this.launchId, parentId).tempId;
 
     this.testItems.push({ name, id: stepId });
@@ -135,11 +138,11 @@ export class Reporter {
   }
 
   finishSuites(): void {
-    this.suiteIds.forEach((suiteId) => {
-      const finishSuiteObj = (this.testData[suiteId] && { status: this.testData[suiteId] }) || {};
-      this.client.finishTestItem(suiteId, finishSuiteObj);
+    this.suites.forEach(({ id, customStatus }) => {
+      const finishSuiteObj = (customStatus && { status: customStatus }) || {};
+      this.client.finishTestItem(id, finishSuiteObj);
     });
-    this.testData = {};
+    this.suites = [];
   }
 
   sendLogsOnFail(errors: any, testItemId: string): void {
@@ -157,20 +160,19 @@ export class Reporter {
   }
 
   getCurrentSuiteId(): string {
-    return this.suiteIds.length ? this.suiteIds[this.suiteIds.length - 1] : undefined;
+    return getLastItem(this.suites).id;
   }
 
   getCurrentTestItemId(): string {
-    return (
-      (this.testItems.length && this.testItems[this.testItems.length - 1].id) ||
-      this.getCurrentSuiteId()
-    );
+    const lastTest = getLastItem(this.testItems);
+    return lastTest ? lastTest.id : this.getCurrentSuiteId();
   }
 
   setStatus({ status }: ObjUniversal): void {
     const testItemId = this.getCurrentTestItemId();
-    if (this.suiteIds.includes(testItemId)) {
-      this.testData[testItemId] = status;
+    if (this.suites.some(({ id }) => id === testItemId)) {
+      const idx = this.suites.findIndex(({ id }) => id === testItemId);
+      this.suites[idx].customStatus = status;
     } else {
       this.testItems[this.testItems.findIndex((item) => item.id === testItemId)].status = status;
     }

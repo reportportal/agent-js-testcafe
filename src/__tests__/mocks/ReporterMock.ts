@@ -22,14 +22,18 @@ import { config } from './configMock';
 
 jest.spyOn(process, 'cwd').mockReturnValue(`C:${path.sep}project`);
 
+export const suiteName = 'suite_name';
+export const testName = 'test_name';
+export const filePath = `C:${path.sep}project${path.sep}__test__${path.sep}test.spec.js`;
+
 export const setupReporter = (fields: Array<string> = []): Reporter => {
   const client = new RPClientMock(config);
   const reporter = new Reporter(config);
   reporter['client'] = client;
   const dict = {
     launchId: 'tempLaunchId',
-    suiteIds: ['tempTestItemId'],
-    testItems: [{ name: 'test_name', id: 'tempTestItemId' }],
+    suites: [{ id: 'tempSuiteItemId', path: filePath, name: suiteName }],
+    testItems: [{ name: testName, id: 'tempTestItemId' }],
   };
   fields.forEach((field) => {
     // @ts-ignore
@@ -38,7 +42,3 @@ export const setupReporter = (fields: Array<string> = []): Reporter => {
 
   return reporter;
 };
-
-export const suiteName = 'suite_name';
-export const testName = 'test_name';
-export const filePath = `C:${path.sep}project${path.sep}__test__${path.sep}test.spec.js`;

@@ -40,7 +40,9 @@ describe('start report suite', () => {
     expect(reporter['client'].startTestItem).toHaveBeenCalledWith(startSuiteObj, 'tempLaunchId');
   });
 
-  test('reporter.suiteIds should be updated ', () => {
-    expect(reporter['suiteIds']).toEqual(['tempTestItemId']);
+  test('reporter.suites should be updated ', () => {
+    expect(reporter['suites']).toEqual([
+      { id: 'tempTestItemId', name: 'suite_name', path: filePath },
+    ]);
   });
 });

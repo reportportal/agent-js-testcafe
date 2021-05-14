@@ -16,7 +16,7 @@
  */
 
 import { EVENTS } from '@reportportal/client-javascript/lib/constants/events';
-import { setupReporter } from '../mocks/ReporterMock';
+import { filePath, setupReporter } from '../mocks/ReporterMock';
 import { Reporter } from '../../reporter';
 
 describe('test listeners', () => {
@@ -25,7 +25,7 @@ describe('test listeners', () => {
   const listeners = [EVENTS.SET_LAUNCH_STATUS, EVENTS.SET_STATUS];
 
   beforeEach(() => {
-    reporter = setupReporter(['launchId', 'suiteIds']);
+    reporter = setupReporter(['launchId', 'suites']);
     reporter.reportTaskStart(startTime, undefined, undefined);
   });
 
@@ -46,7 +46,14 @@ describe('test listeners', () => {
       test('emit EVENTS.SET_STATUS for suite', () => {
         (process as NodeJS.EventEmitter).emit(EVENTS.SET_STATUS, { status: 'info' });
 
-        expect(reporter['testData']).toEqual({ tempTestItemId: 'info' });
+        expect(reporter['suites']).toEqual([
+          {
+            id: 'tempSuiteItemId',
+            name: 'suite_name',
+            path: filePath,
+            customStatus: 'info',
+          },
+        ]);
       });
 
       test('emit EVENTS.SET_STATUS for test', () => {

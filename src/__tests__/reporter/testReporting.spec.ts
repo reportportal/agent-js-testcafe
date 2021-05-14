@@ -20,8 +20,7 @@ import { StartTestItemRQ } from '../../models';
 import { TEST_ITEM_TYPES } from '../../constants';
 
 describe('start report test item', () => {
-  const reporter = setupReporter(['launchId', 'suiteIds']);
-  reporter['testData'] = { path: filePath, suiteName };
+  const reporter = setupReporter(['launchId', 'suites']);
   const testMeta = {
     description: 'test_description',
     attributes: [{ key: 'key', value: 'value' }, { value: 'value' }],
@@ -41,7 +40,7 @@ describe('start report test item', () => {
     expect(reporter['client'].startTestItem).toHaveBeenCalledWith(
       startTestObj,
       'tempLaunchId',
-      'tempTestItemId',
+      'tempSuiteItemId',
     );
   });
 

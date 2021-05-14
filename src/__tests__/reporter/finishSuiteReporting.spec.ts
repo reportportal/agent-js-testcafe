@@ -18,17 +18,17 @@
 import { setupReporter } from '../mocks/ReporterMock';
 
 describe('finish report suite', () => {
-  const reporter = setupReporter(['launchId', 'suiteIds']);
+  const reporter = setupReporter(['launchId', 'suites']);
   const endTime = Date.now();
 
   reporter.reportTaskDone(endTime, undefined, undefined);
 
   test('client.finishTestItem should be called', () => {
     expect(reporter['client'].finishTestItem).toHaveBeenCalledTimes(1);
-    expect(reporter['client'].finishTestItem).toHaveBeenCalledWith('tempTestItemId', {});
+    expect(reporter['client'].finishTestItem).toHaveBeenCalledWith('tempSuiteItemId', {});
   });
 
-  test('testData should be reset', () => {
-    expect(reporter['testData']).toEqual({});
+  test('suites should be reset', () => {
+    expect(reporter['suites']).toEqual([]);
   });
 });

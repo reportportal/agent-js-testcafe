@@ -17,7 +17,7 @@
 
 import path from 'path';
 import { version as pjsonVersion, name as pjsonName } from '../package.json';
-import { Attribute, StartLaunchRQ, ReportPortalConfig, ObjUniversal } from './models';
+import { Attribute, StartLaunchRQ, ReportPortalConfig } from './models';
 
 export const getLastItem = <T>(items: T[] = []): T => items[items.length - 1];
 

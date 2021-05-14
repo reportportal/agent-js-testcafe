@@ -26,7 +26,7 @@ describe('finish report test item', () => {
   };
 
   describe('test with PASSED status', () => {
-    const reporter = setupReporter(['launchId', 'suiteIds', 'testItems']);
+    const reporter = setupReporter(['launchId', 'suites', 'testItems']);
 
     reporter.reportTestDone(testName, testRunInfo);
 
@@ -48,7 +48,7 @@ describe('finish report test item', () => {
     });
 
     describe('with default skippedIssue(true)', () => {
-      const reporter = setupReporter(['launchId', 'suiteIds', 'testItems']);
+      const reporter = setupReporter(['launchId', 'suites', 'testItems']);
       testRunInfo.skipped = true;
 
       reporter.reportTestDone(testName, testRunInfo);
@@ -66,7 +66,7 @@ describe('finish report test item', () => {
     });
 
     describe('with skippedIssue=false', () => {
-      const reporter = setupReporter(['launchId', 'suiteIds', 'testItems']);
+      const reporter = setupReporter(['launchId', 'suites', 'testItems']);
       config.skippedIssue = false;
       testRunInfo.skipped = true;
 
@@ -84,7 +84,7 @@ describe('finish report test item', () => {
   });
 
   describe('test with FAILED status', () => {
-    const reporter = setupReporter(['launchId', 'suiteIds', 'testItems']);
+    const reporter = setupReporter(['launchId', 'suites', 'testItems']);
     testRunInfo.skipped = false;
     testRunInfo.errs = ['401 unauthorized'];
     jest.spyOn(reporter, 'sendLogsOnFail').mockImplementation((errors, testItemId) => ({

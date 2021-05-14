@@ -23,8 +23,7 @@ describe('finish report launch', () => {
   const endTime = Date.now();
 
   beforeEach(() => {
-    reporter = setupReporter(['launchId', 'suiteIds']);
-    reporter['testData'] = { path: filePath, suiteName, testName };
+    reporter = setupReporter(['launchId', 'suites']);
   });
 
   test('client.finishLaunch should be called with corresponding params', () => {
@@ -37,7 +36,6 @@ describe('finish report launch', () => {
   });
 
   test('client.finishLaunch with custom launch status', () => {
-    beforeEach(() => {});
     reporter['customLaunchStatus'] = 'info';
 
     reporter.reportTaskDone(endTime, undefined, undefined);
