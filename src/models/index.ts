@@ -24,7 +24,7 @@ import {
   Attachment,
 } from './reporting';
 import { ReportPortalConfig } from './configs';
-import { Parameter, Attribute, Issue, RPItem } from './common';
+import { Parameter, Attribute, Issue, RPItem, ObjUniversal } from './common';
 
 export {
   StartLaunchRQ,
@@ -38,4 +38,5 @@ export {
   Attribute,
   Issue,
   RPItem,
+  ObjUniversal,
 };

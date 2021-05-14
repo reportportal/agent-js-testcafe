@@ -1,5 +1,5 @@
 /*
- *  Copyright 2020 EPAM Systems
+ *  Copyright 2021 EPAM Systems
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,7 +15,20 @@
  *
  */
 
-export enum LAUNCH_MODES {
-  DEFAULT = 'DEFAULT',
-  DEBUG = 'DEBUG',
-}
+import { RPClientMock } from '../mocks/RPClientMock';
+import { setupReporter } from '../mocks/ReporterMock';
+import { config } from '../mocks/configMock';
+
+describe('setup reporter', () => {
+  const reporter = setupReporter();
+
+  test('client instance should exist', () => {
+    expect(reporter['client']).toBeDefined();
+    expect(reporter['client']).toBeInstanceOf(RPClientMock);
+  });
+
+  test('config should be setup', () => {
+    expect(reporter['config']).toBeDefined();
+    expect(reporter['config']).toEqual(config);
+  });
+});

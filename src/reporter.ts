@@ -16,14 +16,23 @@
  */
 
 import RPClient from '@reportportal/client-javascript';
+import { EVENTS } from '@reportportal/client-javascript/lib/constants/events';
 import stripAnsi from 'strip-ansi';
-import { ReportPortalConfig, StartLaunchRQ, StartTestItemRQ, RPItem } from './models';
-import { getAgentInfo, getLastItem, getStartLaunchObj, getCodeRef } from './utils';
+import { ObjUniversal, ReportPortalConfig, RPItem, StartLaunchRQ, StartTestItemRQ } from './models';
+import { getAgentInfo, getCodeRef, getLastItem, getStartLaunchObj } from './utils';
 import { LOG_LEVELS, STATUSES, TEST_ITEM_TYPES } from './constants';
 
 interface TestItem {
   id: string;
   name: string;
+  status?: string;
+}
+
+interface Suite {
+  id: string;
+  name: string;
+  path?: string;
+  status?: string;
 }
 
 export class Reporter {
@@ -32,15 +41,15 @@ export class Reporter {
   private client: RPClient;
   private startTime: number;
   private launchId: string;
-  private suiteIds: string[];
+  private suites: Suite[];
   private testItems: TestItem[];
-  private testData: { [name: string]: string };
+  private customLaunchStatus: string;
 
   constructor(config: ReportPortalConfig) {
     this.noColors = false;
-    this.suiteIds = [];
+    this.suites = [];
     this.testItems = [];
-    this.testData = {};
+    this.customLaunchStatus = '';
 
     const agentInfo = getAgentInfo();
 
@@ -48,7 +57,18 @@ export class Reporter {
     this.client = new RPClient(config, agentInfo);
   }
 
-  reportTaskStart(startTime: number, userAgents: any, testCount: number): void {
+  registerRPListeners(): void {
+    process.on(EVENTS.SET_LAUNCH_STATUS, this.setLaunchStatus.bind(this));
+    process.on(EVENTS.SET_STATUS, this.setStatus.bind(this));
+  }
+
+  unregisterRPListeners(): void {
+    process.off(EVENTS.SET_LAUNCH_STATUS, this.setLaunchStatus.bind(this));
+    process.off(EVENTS.SET_STATUS, this.setStatus.bind(this));
+  }
+
+  reportTaskStart(startTime: number, userAgents: string[], testCount: number): void {
+    this.registerRPListeners();
     this.startTime = startTime;
     const startLaunchObj: StartLaunchRQ = getStartLaunchObj({ startTime }, this.config);
 
@@ -56,7 +76,6 @@ export class Reporter {
   }
 
   reportFixtureStart(name: string, path: string, meta: RPItem): void {
-    this.testData = { ...this.testData, path, suiteName: name };
     const codeRef = getCodeRef(path, name);
     const startSuiteObj: StartTestItemRQ = {
       name,
@@ -66,11 +85,11 @@ export class Reporter {
       codeRef,
     };
     const suiteId = this.client.startTestItem(startSuiteObj, this.launchId).tempId;
-    this.suiteIds.push(suiteId);
+    this.suites.push({ id: suiteId, path, name });
   }
 
   reportTestStart(name: string, testMeta: RPItem): void {
-    const { path, suiteName } = this.testData;
+    const { path, name: suiteName, id: parentId } = getLastItem(this.suites);
     const codeRef = getCodeRef(path, [suiteName, name]);
     const startTestObj: StartTestItemRQ = {
       name,
@@ -79,7 +98,6 @@ export class Reporter {
       attributes: testMeta.attributes,
       codeRef,
     };
-    const parentId = getLastItem(this.suiteIds);
     const stepId = this.client.startTestItem(startTestObj, this.launchId, parentId).tempId;
 
     this.testItems.push({ name, id: stepId });
@@ -87,8 +105,10 @@ export class Reporter {
 
   reportTestDone(name: string, testRunInfo: any): void {
     const hasError = !!testRunInfo.errs.length;
-    const testItemId = this.testItems.find((item) => item.name === name).id;
-    let status = STATUSES.PASSED;
+    const { status: customTestItemStatus, id: testItemId } = this.testItems.find(
+      (item) => item.name === name,
+    );
+    let status: STATUSES | string = STATUSES.PASSED;
     let withoutIssue;
     if (testRunInfo.skipped) {
       status = STATUSES.SKIPPED;
@@ -97,25 +117,32 @@ export class Reporter {
       status = STATUSES.FAILED;
       this.sendLogsOnFail(testRunInfo.errs, testItemId);
     }
+
     const finishTestItemObj = {
-      status,
+      status: customTestItemStatus || status,
       ...(withoutIssue && { issue: { issueType: 'NOT_ISSUE' } }),
     };
     this.client.finishTestItem(testItemId, finishTestItemObj);
     this.testItems = this.testItems.filter((item) => item.id !== testItemId);
   }
 
-  reportTaskDone(endTime: number, passed: any, warnings: any): void {
+  reportTaskDone(endTime: number, passed: number, warnings: string[]): void {
     this.finishSuites();
-    this.client.finishLaunch(this.launchId, { endTime });
+    this.client.finishLaunch(this.launchId, {
+      endTime,
+      ...(this.customLaunchStatus && { status: this.customLaunchStatus }),
+    });
     this.launchId = null;
+    this.customLaunchStatus = '';
+    this.unregisterRPListeners();
   }
 
   finishSuites(): void {
-    this.suiteIds.forEach((suiteId) => {
-      this.client.finishTestItem(suiteId, {});
+    this.suites.forEach(({ id, status }) => {
+      const finishSuiteObj = (status && { status }) || {};
+      this.client.finishTestItem(id, finishSuiteObj);
     });
-    this.testData = {};
+    this.suites = [];
   }
 
   sendLogsOnFail(errors: any, testItemId: string): void {
@@ -126,5 +153,28 @@ export class Reporter {
         message: stripAnsi(this.formatError(error)),
       });
     });
+  }
+
+  setLaunchStatus(status: string): void {
+    this.customLaunchStatus = status;
+  }
+
+  getCurrentSuiteId(): string {
+    return getLastItem(this.suites).id;
+  }
+
+  getCurrentTestItemId(): string {
+    const lastTest = getLastItem(this.testItems);
+    return lastTest ? lastTest.id : this.getCurrentSuiteId();
+  }
+
+  setStatus({ status }: ObjUniversal): void {
+    const testItemId = this.getCurrentTestItemId();
+    const suite = this.suites.find(({ id }) => id === testItemId);
+    if (suite) {
+      suite.status = status;
+    } else {
+      this.testItems[this.testItems.findIndex((item) => item.id === testItemId)].status = status;
+    }
   }
 }

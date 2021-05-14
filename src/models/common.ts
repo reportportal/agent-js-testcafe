@@ -59,3 +59,7 @@ export interface RPItemFinishRQ extends RPItem {
   status?: STATUSES;
   endTime?: Date | number;
 }
+
+export interface ObjUniversal {
+  [name: string]: string;
+}

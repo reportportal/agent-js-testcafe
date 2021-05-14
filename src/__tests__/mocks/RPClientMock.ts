@@ -17,20 +17,12 @@
 
 import { ReportPortalConfig } from '../../models';
 
-export const getDefaultMockConfig = (): ReportPortalConfig => ({
-  token: '00000000-0000-0000-0000-000000000000',
-  endpoint: 'https://reportportal.server/api/v1',
-  project: 'ProjectName',
-  launch: 'LaunchName',
-  description: 'Launch description',
-  attributes: [],
-});
-
+const mockedDate = Date.now();
 export class RPClientMock {
   private config: ReportPortalConfig;
 
   constructor(config?: ReportPortalConfig) {
-    this.config = config || getDefaultMockConfig();
+    this.config = config;
   }
 
   public startLaunch = jest.fn().mockReturnValue({
@@ -52,6 +44,14 @@ export class RPClientMock {
   });
 
   public sendLog = jest.fn().mockReturnValue({
+    promise: Promise.resolve('ok'),
+  });
+
+  public helpers = {
+    now: (): number => mockedDate,
+  };
+
+  public checkConnect = jest.fn().mockReturnValue({
     promise: Promise.resolve('ok'),
   });
 }

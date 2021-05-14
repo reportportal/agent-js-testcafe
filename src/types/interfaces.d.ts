@@ -1,5 +1,5 @@
 /*
- *  Copyright 2020 EPAM Systems
+ *  Copyright 2021 EPAM Systems
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,7 +15,27 @@
  *
  */
 
-export enum LAUNCH_MODES {
-  DEFAULT = 'DEFAULT',
-  DEBUG = 'DEBUG',
+declare namespace Interfaces {
+  interface Attribute {
+    value: string;
+    key?: string;
+    system?: boolean;
+  }
+
+  interface Attachment {
+    name: string;
+    type: string;
+    content: string | Buffer;
+  }
+
+  interface LogRQ {
+    level?: string;
+    message?: string;
+    time?: number;
+    file?: Attachment;
+  }
+
+  interface ObjUniversal {
+    [name: string]: string;
+  }
 }
