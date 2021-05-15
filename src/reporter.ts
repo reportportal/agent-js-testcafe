@@ -191,12 +191,11 @@ export class Reporter {
 
   finishSuites(): void {
     this.suites.forEach(({ id, status, testCaseId, attributes }) => {
-      const finishSuiteObj =
-        {
-          ...(status && { status }),
-          ...(testCaseId && { testCaseId }),
-          ...(attributes && { attributes }),
-        } || {};
+      const finishSuiteObj = {
+        ...(status && { status }),
+        ...(testCaseId && { testCaseId }),
+        ...(attributes && { attributes }),
+      };
       this.client.finishTestItem(id, finishSuiteObj);
     });
     this.suites = [];
