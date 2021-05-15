@@ -39,4 +39,6 @@ export const PublicReportingAPI = {
   setStatusCancelled: (): void => ClientPublicReportingAPI.setStatus(RP_STATUSES.CANCELLED),
   setStatusInfo: (): void => ClientPublicReportingAPI.setStatus(RP_STATUSES.INFO),
   setStatusWarn: (): void => ClientPublicReportingAPI.setStatus(RP_STATUSES.WARN),
+  setTestCaseId: ClientPublicReportingAPI.setTestCaseId,
+  addAttributes: ClientPublicReportingAPI.addAttributes,
 };
