@@ -15,7 +15,6 @@
  *
  */
 
-import { EVENTS } from '@reportportal/client-javascript/lib/constants/events';
 import { setupReporter } from '../mocks/ReporterMock';
 import { StartLaunchRQ } from '../../models';
 import { getStartLaunchObj } from '../../utils';
@@ -25,13 +24,8 @@ describe('start report launch', () => {
   const reporter = setupReporter();
   const startTime = Date.now();
   const startLaunchObj: StartLaunchRQ = getStartLaunchObj({ startTime }, config);
-  const listeners = [EVENTS.SET_LAUNCH_STATUS, EVENTS.SET_STATUS];
 
   reporter.reportTaskStart(startTime, undefined, undefined);
-
-  test('listeners should be added', () => {
-    expect(process.eventNames()).toEqual(expect.arrayContaining(listeners));
-  });
 
   test('client.startLaunch should be called with corresponding params', () => {
     expect(reporter['client'].startLaunch).toHaveBeenCalledTimes(1);

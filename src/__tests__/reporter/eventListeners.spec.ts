@@ -19,10 +19,17 @@ import { EVENTS } from '@reportportal/client-javascript/lib/constants/events';
 import { filePath, setupReporter } from '../mocks/ReporterMock';
 import { Reporter } from '../../reporter';
 
+const file = {
+  name: 'filename',
+  type: 'image/png',
+  content: Buffer.from([1, 2, 3, 4, 5, 6, 7]).toString('base64'),
+};
+
 describe('test listeners', () => {
   let reporter: Reporter;
   const startTime = Date.now();
-  const listeners = [EVENTS.SET_LAUNCH_STATUS, EVENTS.SET_STATUS];
+  const { SET_LAUNCH_STATUS, SET_STATUS, ADD_LOG, ADD_LAUNCH_LOG } = EVENTS;
+  const listeners = [SET_LAUNCH_STATUS, SET_STATUS, ADD_LOG, ADD_LAUNCH_LOG];
 
   beforeEach(() => {
     reporter = setupReporter(['launchId', 'suites']);
@@ -67,6 +74,68 @@ describe('test listeners', () => {
             status: 'warn',
           },
         ]);
+      });
+    });
+
+    describe('EVENTS.ADD_LOG listener', () => {
+      let spySendLog: jest.SpyInstance;
+      beforeEach(() => {
+        spySendLog = jest.spyOn(reporter['client'], 'sendLog');
+      });
+
+      test('should send log for suite with specified params', () => {
+        const log = {
+          level: 'ERROR',
+          message: 'info log',
+          file,
+        };
+        const expectedSendLogObj = {
+          level: 'ERROR',
+          message: 'info log',
+          time: reporter['client'].helpers.now(),
+        };
+
+        (process as NodeJS.EventEmitter).emit(EVENTS.ADD_LOG, { log });
+
+        expect(spySendLog).toHaveBeenCalledWith('tempSuiteItemId', expectedSendLogObj, file);
+      });
+
+      test('should send log current for test with specified params', () => {
+        reporter['testItems'] = [{ name: 'testName', id: 'tempTestId' }];
+        const log = {
+          level: 'ERROR',
+          message: 'info log',
+          file,
+        };
+        const expectedSendLogObj = {
+          time: reporter['client'].helpers.now(),
+          level: 'ERROR',
+          message: 'info log',
+        };
+
+        (process as NodeJS.EventEmitter).emit(EVENTS.ADD_LOG, { log });
+
+        expect(spySendLog).toHaveBeenCalledWith('tempTestId', expectedSendLogObj, file);
+      });
+    });
+
+    describe('EVENTS.ADD_LAUNCH_LOG listener', () => {
+      test('should send log to launch with specified params', () => {
+        const spySendLog = jest.spyOn(reporter['client'], 'sendLog');
+        const log = {
+          level: 'ERROR',
+          message: 'info log',
+          file,
+        };
+        const expectedSendLogObj = {
+          time: reporter['client'].helpers.now(),
+          level: 'ERROR',
+          message: 'info log',
+        };
+
+        (process as NodeJS.EventEmitter).emit(EVENTS.ADD_LAUNCH_LOG, log);
+
+        expect(spySendLog).toHaveBeenCalledWith('tempLaunchId', expectedSendLogObj, file);
       });
     });
   });

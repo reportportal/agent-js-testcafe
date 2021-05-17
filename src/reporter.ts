@@ -18,9 +18,16 @@
 import RPClient from '@reportportal/client-javascript';
 import { EVENTS } from '@reportportal/client-javascript/lib/constants/events';
 import stripAnsi from 'strip-ansi';
-import { ObjUniversal, ReportPortalConfig, RPItem, StartLaunchRQ, StartTestItemRQ } from './models';
+import {
+  Attribute,
+  LogRQ,
+  ObjUniversal,
+  ReportPortalConfig,
+  RPItem,
+  StartLaunchRQ,
+  StartTestItemRQ,
+} from './models';
 import { getAgentInfo, getCodeRef, getLastItem, getStartLaunchObj } from './utils';
-import { Attribute } from './models/common';
 import { LOG_LEVELS, STATUSES, TEST_ITEM_TYPES } from './constants';
 
 interface TestItem {
@@ -67,6 +74,8 @@ export class Reporter {
     process.on(EVENTS.SET_STATUS, this.setStatus.bind(this));
     process.on(EVENTS.SET_TEST_CASE_ID, this.setTestCaseId.bind(this));
     process.on(EVENTS.ADD_ATTRIBUTES, this.addAttributes.bind(this));
+    process.on(EVENTS.ADD_LOG, this.sendTestItemLog.bind(this));
+    process.on(EVENTS.ADD_LAUNCH_LOG, this.sendLaunchLog.bind(this));
   }
 
   unregisterRPListeners(): void {
@@ -74,6 +83,8 @@ export class Reporter {
     process.off(EVENTS.SET_STATUS, this.setStatus.bind(this));
     process.off(EVENTS.SET_TEST_CASE_ID, this.setTestCaseId.bind(this));
     process.off(EVENTS.ADD_ATTRIBUTES, this.addAttributes.bind(this));
+    process.off(EVENTS.ADD_LOG, this.sendTestItemLog.bind(this));
+    process.off(EVENTS.ADD_LAUNCH_LOG, this.sendLaunchLog.bind(this));
   }
 
   getCurrentSuiteId(): string {
@@ -223,5 +234,25 @@ export class Reporter {
     } else {
       this.testItems[this.testItems.findIndex((item) => item.id === testItemId)].status = status;
     }
+  }
+
+  sendTestItemLog({ log }: { log: LogRQ }): void {
+    this.sendCustomLog(this.getCurrentTestItemId(), log);
+  }
+
+  sendLaunchLog(log: LogRQ): void {
+    this.sendCustomLog(this.launchId, log);
+  }
+
+  sendCustomLog(tempId: string, { level, message = '', file }: LogRQ): void {
+    this.client.sendLog(
+      tempId,
+      {
+        message,
+        level,
+        time: this.client.helpers.now(),
+      },
+      file,
+    );
   }
 }
