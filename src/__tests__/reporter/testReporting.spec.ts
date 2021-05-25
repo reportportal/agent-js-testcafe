@@ -45,6 +45,6 @@ describe('start report test item', () => {
   });
 
   test('reporter.testItems should be updated', () => {
-    expect(reporter['testItems']).toEqual([{ name: testName, id: 'tempTestItemId' }]);
+    expect(reporter['testItems']).toEqual([{ name: testName, id: 'tempTestItemId', description: "test_description", }]);
   });
 });

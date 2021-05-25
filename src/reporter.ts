@@ -36,6 +36,7 @@ interface TestItem {
   status?: string;
   testCaseId?: string;
   attributes?: Attribute[];
+  description?: string;
 }
 
 interface Suite {
@@ -56,6 +57,7 @@ export class Reporter {
   private suites: Suite[];
   private testItems: TestItem[];
   private customLaunchStatus: string;
+  private descriptionWithError: string;
 
   constructor(config: ReportPortalConfig) {
     this.noColors = false;
@@ -67,6 +69,7 @@ export class Reporter {
 
     this.config = config;
     this.client = new RPClient(config, agentInfo);
+    this.descriptionWithError = '';
   }
 
   registerRPListeners(): void {
@@ -157,8 +160,7 @@ export class Reporter {
       codeRef,
     };
     const stepId = this.client.startTestItem(startTestObj, this.launchId, parentId).tempId;
-
-    this.testItems.push({ name, id: stepId });
+    this.testItems.push({ name, id: stepId, description: testMeta.description });
   }
 
   reportTestDone(name: string, testRunInfo: any): void {
@@ -168,6 +170,7 @@ export class Reporter {
       id: testItemId,
       testCaseId,
       attributes,
+      description,
     } = this.testItems.find((item) => item.name === name);
     let status: STATUSES | string = STATUSES.PASSED;
     let withoutIssue;
@@ -176,14 +179,17 @@ export class Reporter {
       withoutIssue = this.config.skippedIssue === false;
     } else if (hasError) {
       status = STATUSES.FAILED;
+      const errorMsg = testRunInfo.errs[testRunInfo.errs.length - 1].errMsg;
       this.sendLogsOnFail(testRunInfo.errs, testItemId);
+      this.descriptionWithError =
+        errorMsg && (description || '').concat(`\n\`\`\`error\n${errorMsg}\n\`\`\``);
     }
-
     const finishTestItemObj = {
       status: customTestItemStatus || status,
       ...(withoutIssue && { issue: { issueType: 'NOT_ISSUE' } }),
       ...(testCaseId && { testCaseId }),
       ...(attributes && { attributes }),
+      ...(this.descriptionWithError && { description: this.descriptionWithError }),
     };
     this.client.finishTestItem(testItemId, finishTestItemObj);
     this.testItems = this.testItems.filter((item) => item.id !== testItemId);
