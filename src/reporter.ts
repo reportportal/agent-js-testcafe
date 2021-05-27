@@ -57,7 +57,6 @@ export class Reporter {
   private suites: Suite[];
   private testItems: TestItem[];
   private customLaunchStatus: string;
-  private descriptionWithError: string;
 
   constructor(config: ReportPortalConfig) {
     this.noColors = false;
@@ -69,7 +68,6 @@ export class Reporter {
 
     this.config = config;
     this.client = new RPClient(config, agentInfo);
-    this.descriptionWithError = '';
   }
 
   registerRPListeners(): void {
@@ -174,14 +172,16 @@ export class Reporter {
     } = this.testItems.find((item) => item.name === name);
     let status: STATUSES | string = STATUSES.PASSED;
     let withoutIssue;
+    let descriptionWithError;
     if (testRunInfo.skipped) {
       status = STATUSES.SKIPPED;
       withoutIssue = this.config.skippedIssue === false;
     } else if (hasError) {
       status = STATUSES.FAILED;
-      const errorMsg = testRunInfo.errs[testRunInfo.errs.length - 1].errMsg;
+      // @ts-ignore
+      const errorMsg = stripAnsi(this.formatError(testRunInfo.errs[testRunInfo.errs.length - 1]));
       this.sendLogsOnFail(testRunInfo.errs, testItemId);
-      this.descriptionWithError =
+      descriptionWithError =
         errorMsg && (description || '').concat(`\n\`\`\`error\n${errorMsg}\n\`\`\``);
     }
     const finishTestItemObj = {
@@ -189,7 +189,7 @@ export class Reporter {
       ...(withoutIssue && { issue: { issueType: 'NOT_ISSUE' } }),
       ...(testCaseId && { testCaseId }),
       ...(attributes && { attributes }),
-      ...(this.descriptionWithError && { description: this.descriptionWithError }),
+      ...(descriptionWithError && { description: descriptionWithError }),
     };
     this.client.finishTestItem(testItemId, finishTestItemObj);
     this.testItems = this.testItems.filter((item) => item.id !== testItemId);
