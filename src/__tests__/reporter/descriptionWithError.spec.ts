@@ -26,18 +26,19 @@ describe('finish report test item', () => {
     describe('test with FAILED status', () => {
         const reporter = setupReporter(['launchId', 'suites', 'testItems']);
         testRunInfo.skipped = false;
-        testRunInfo.errs = [{ errMsg: '401 unauthorized' }];
+        testRunInfo.errs = ["401 unauthorized"];
         jest.spyOn(reporter, 'sendLogsOnFail').mockImplementation((errors, testItemId) => ({
             errors,
             testItemId,
         }));
 
+        jest.spyOn(reporter, 'formatError').mockImplementation((object) => JSON.stringify(object));
 
         reporter.reportTestDone(testName, testRunInfo);
 
         test('test description should have error message', () => {
             expect(reporter['client'].finishTestItem).toHaveBeenCalledWith('tempTestItemId', {
-                description: "\n```error\n401 unauthorized\n```",
+                description: "\n```error\n\"401 unauthorized\"\n```",
                 status: "failed",
             });
         });
