@@ -36,6 +36,7 @@ interface TestItem {
   status?: string;
   testCaseId?: string;
   attributes?: Attribute[];
+  description?: string;
 }
 
 interface Suite {
@@ -157,8 +158,7 @@ export class Reporter {
       codeRef,
     };
     const stepId = this.client.startTestItem(startTestObj, this.launchId, parentId).tempId;
-
-    this.testItems.push({ name, id: stepId });
+    this.testItems.push({ name, id: stepId, description: testMeta.description });
   }
 
   reportTestDone(name: string, testRunInfo: any): void {
@@ -168,22 +168,28 @@ export class Reporter {
       id: testItemId,
       testCaseId,
       attributes,
+      description,
     } = this.testItems.find((item) => item.name === name);
     let status: STATUSES | string = STATUSES.PASSED;
     let withoutIssue;
+    let descriptionWithError;
     if (testRunInfo.skipped) {
       status = STATUSES.SKIPPED;
       withoutIssue = this.config.skippedIssue === false;
     } else if (hasError) {
       status = STATUSES.FAILED;
+      // @ts-ignore
+      const errorMsg = stripAnsi(this.formatError(testRunInfo.errs[testRunInfo.errs.length - 1]));
       this.sendLogsOnFail(testRunInfo.errs, testItemId);
+      descriptionWithError =
+        errorMsg && (description || '').concat(`\n\`\`\`error\n${errorMsg}\n\`\`\``);
     }
-
     const finishTestItemObj = {
       status: customTestItemStatus || status,
       ...(withoutIssue && { issue: { issueType: 'NOT_ISSUE' } }),
       ...(testCaseId && { testCaseId }),
       ...(attributes && { attributes }),
+      ...(descriptionWithError && { description: descriptionWithError }),
     };
     this.client.finishTestItem(testItemId, finishTestItemObj);
     this.testItems = this.testItems.filter((item) => item.id !== testItemId);
