@@ -30,7 +30,7 @@ export const setupReporter = (fields: Array<string> = []): Reporter => {
   const client = new RPClientMock(config);
   const reporter = new Reporter(config);
   // @ts-ignore
-  reporter.formatError = () => { };
+  reporter.formatError = jest.fn((object) => JSON.stringify(object));
   reporter['client'] = client;
   const dict = {
     launchId: 'tempLaunchId',
