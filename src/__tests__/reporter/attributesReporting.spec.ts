@@ -14,142 +14,157 @@
  *  limitations under the License.
  */
 
-import { Reporter } from '../../reporter';
+import { Reporter, TestItem } from '../../reporter';
 import { config } from '../mocks/configMock';
 
-describe('attributes reporting', function () {
-    let reporter;
-    beforeAll(function () {
-        reporter = new Reporter(config);
-    });
+describe('attributes reporting', function() {
+  let reporter: Reporter;
+  beforeAll(function() {
+    reporter = new Reporter(config);
+  });
 
-    afterEach(function () {
-        reporter.testItems = [];
-        reporter.suites = [];
-        jest.clearAllMocks();
-    });
+  afterEach(function() {
+    // @ts-ignore access to the class private property
+    reporter.testItems = [];
+    // @ts-ignore access to the class private property
+    reporter.suites = [];
+    jest.clearAllMocks();
+  });
 
-    it('onAddAttributes: should add attributes for current test in attributes map', function () {
-        const currentTest = {
-            name: 'test',
-            id: 'testItemId',
-        };
-        reporter.testItems.push(currentTest);
-        const attributes = [
-            {
-                key: 'key1',
-                value: 'value1',
-            },
-        ];
-        const expectedAttributes = [{ id: "testItemId", name: "test", attributes }];
+  it('onAddAttributes: should add attributes for current test in attributes map', function() {
+    const currentTest = {
+      name: 'test',
+      id: 'testItemId',
+    };
+    // @ts-ignore access to the class private property
+    reporter.testItems.push(currentTest);
+    const attributes = [
+      {
+        key: 'key1',
+        value: 'value1',
+      },
+    ];
+    const expectedAttributes = [{ id: 'testItemId', name: 'test', attributes }];
 
-        reporter.addAttributes({ attributes });
+    reporter.addAttributes({ attributes });
 
-        expect(reporter.testItems).toEqual(expectedAttributes);
-    });
+    // @ts-ignore access to the class private property
+    expect(reporter.testItems).toEqual(expectedAttributes);
+  });
 
-    it('onAddAttributes: should append attributes for current test in attributes map', function () {
-        const currentTest = {
-            name: 'test',
-            id: 'testItemId',
-        };
-        reporter.testItems.push(currentTest);
-        currentTest.attributes = [
-            {
-                key: 'key1',
-                value: 'value1',
-            },
-        ];
-        const attributes = [
-            {
-                key: 'key2',
-                value: 'value2',
-            },
-            {
-                key: 'key3',
-                value: 'value3',
-            },
-        ];
+  it('onAddAttributes: should append attributes for current test in attributes map', function() {
+    const currentTest: TestItem = {
+      name: 'test',
+      id: 'testItemId',
+    };
+    // @ts-ignore access to the class private property
+    reporter.testItems.push(currentTest);
+    currentTest.attributes = [
+      {
+        key: 'key1',
+        value: 'value1',
+      },
+    ];
+    const attributes = [
+      {
+        key: 'key2',
+        value: 'value2',
+      },
+      {
+        key: 'key3',
+        value: 'value3',
+      },
+    ];
 
-        const expectedAttributes =
-            [{
-                id: "testItemId", name: "test",
+    const expectedAttributes = [
+      {
+        id: 'testItemId',
+        name: 'test',
 
-                attributes: [
-                    {
-                        key: 'key1',
-                        value: 'value1',
-                    },
-                    {
-                        key: 'key2',
-                        value: 'value2',
-                    },
-                    {
-                        key: 'key3',
-                        value: 'value3',
-                    },
-                ],
-            }];
+        attributes: [
+          {
+            key: 'key1',
+            value: 'value1',
+          },
+          {
+            key: 'key2',
+            value: 'value2',
+          },
+          {
+            key: 'key3',
+            value: 'value3',
+          },
+        ],
+      },
+    ];
 
-        reporter.addAttributes({ attributes });
+    reporter.addAttributes({ attributes });
 
-        expect(reporter.testItems).toEqual(expectedAttributes);
-    });
+    // @ts-ignore access to the class private property
+    expect(reporter.testItems).toEqual(expectedAttributes);
+  });
 
-    it('onAddAttributes: should add attributes for current suite in attributes map', function () {
-        const currentSuite = {
-            name: 'suite',
-            id: 'suiteItemId',
-        };
+  it('onAddAttributes: should add attributes for current suite in attributes map', function() {
+    const currentSuite = {
+      name: 'suite',
+      id: 'suiteItemId',
+    };
 
-        reporter.suites.push(currentSuite);
+    // @ts-ignore access to the class private property
+    reporter.suites.push(currentSuite);
 
-        const attributes = [
-            {
-                key: 'key1',
-                value: 'value1',
-            },
-            {
-                key: 'key2',
-                value: 'value2',
-            },
-        ];
+    const attributes = [
+      {
+        key: 'key1',
+        value: 'value1',
+      },
+      {
+        key: 'key2',
+        value: 'value2',
+      },
+    ];
 
-        const expectedAttributes =
-            [{
-                name: 'suite',
-                id: 'suiteItemId',
-                attributes: [
-                    {
-                        key: 'key1',
-                        value: 'value1',
-                    },
-                    {
-                        key: 'key2',
-                        value: 'value2',
-                    },
-                ],
-            }];
+    const expectedAttributes = [
+      {
+        name: 'suite',
+        id: 'suiteItemId',
+        attributes: [
+          {
+            key: 'key1',
+            value: 'value1',
+          },
+          {
+            key: 'key2',
+            value: 'value2',
+          },
+        ],
+      },
+    ];
 
-        reporter.addAttributes({ attributes });
+    reporter.addAttributes({ attributes });
 
-        expect(reporter.suites).toEqual(expectedAttributes);
-    });
+    // @ts-ignore access to the class private property
+    expect(reporter.suites).toEqual(expectedAttributes);
+  });
 
-    it('onAddAttributes without attributes: should not add attributes for current suite in attributes map', function () {
-        const currentSuite = {
-            name: 'suite',
-            id: 'suiteItemId',
-        };
+  it('onAddAttributes without attributes: should not add attributes for current suite in attributes map', function() {
+    const currentSuite = {
+      name: 'suite',
+      id: 'suiteItemId',
+    };
 
-        reporter.suites.push(currentSuite);
-        const expectedAttributes = [{
-            name: 'suite',
-            id: 'suiteItemId'
-        }];
+    // @ts-ignore access to the class private property
+    reporter.suites.push(currentSuite);
+    const expectedAttributes = [
+      {
+        name: 'suite',
+        id: 'suiteItemId',
+      },
+    ];
 
-        reporter.addAttributes({});
+    reporter.addAttributes({ attributes: [] });
 
-        expect(reporter.suites).toEqual(expectedAttributes);
-    });
+    // @ts-ignore access to the class private property
+    expect(reporter.suites).toEqual(expectedAttributes);
+  });
 });

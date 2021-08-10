@@ -96,7 +96,7 @@ describe('finish report test item', () => {
 
     test('client.finishTestItem should be called with corresponding params', () => {
       expect(reporter['client'].finishTestItem).toHaveBeenCalledWith('tempTestItemId', {
-        description: "\n```error\n\"401 unauthorized\"\n```",
+        description: '\n```error\n"401 unauthorized"\n```',
         status: STATUSES.FAILED,
       });
     });

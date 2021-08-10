@@ -30,7 +30,7 @@ import {
 import { getAgentInfo, getCodeRef, getLastItem, getStartLaunchObj } from './utils';
 import { LOG_LEVELS, STATUSES, TEST_ITEM_TYPES } from './constants';
 
-interface TestItem {
+export interface TestItem {
   id: string;
   name: string;
   status?: string;

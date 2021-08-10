@@ -33,7 +33,7 @@ describe('test listeners', () => {
 
   beforeEach(() => {
     reporter = setupReporter(['launchId', 'suites']);
-    reporter.reportTaskStart(startTime, undefined, undefined);
+    reporter.reportTaskStart(startTime);
   });
 
   test('listeners should be added', () => {

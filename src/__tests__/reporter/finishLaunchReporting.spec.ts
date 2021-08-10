@@ -27,7 +27,7 @@ describe('finish report launch', () => {
   });
 
   test('client.finishLaunch should be called with corresponding params', () => {
-    reporter.reportTaskDone(endTime, undefined, undefined);
+    reporter.reportTaskDone(endTime);
 
     expect(reporter['client'].finishLaunch).toHaveBeenCalledTimes(1);
     expect(reporter['client'].finishLaunch).toHaveBeenCalledWith('tempLaunchId', {
@@ -38,7 +38,7 @@ describe('finish report launch', () => {
   test('client.finishLaunch with custom launch status', () => {
     reporter['customLaunchStatus'] = 'info';
 
-    reporter.reportTaskDone(endTime, undefined, undefined);
+    reporter.reportTaskDone(endTime);
 
     expect(reporter['client'].finishLaunch).toHaveBeenCalledTimes(1);
     expect(reporter['client'].finishLaunch).toHaveBeenCalledWith('tempLaunchId', {
@@ -48,7 +48,7 @@ describe('finish report launch', () => {
   });
 
   test('launchId, customLaunchStatus should be reset', () => {
-    reporter.reportTaskDone(endTime, undefined, undefined);
+    reporter.reportTaskDone(endTime);
 
     expect(reporter['launchId']).toBeNull();
     expect(reporter['customLaunchStatus']).toBe('');

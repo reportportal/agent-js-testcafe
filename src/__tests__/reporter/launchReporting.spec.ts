@@ -25,7 +25,7 @@ describe('start report launch', () => {
   const startTime = Date.now();
   const startLaunchObj: StartLaunchRQ = getStartLaunchObj({ startTime }, config);
 
-  reporter.reportTaskStart(startTime, undefined, undefined);
+  reporter.reportTaskStart(startTime);
 
   test('client.startLaunch should be called with corresponding params', () => {
     expect(reporter['client'].startLaunch).toHaveBeenCalledTimes(1);

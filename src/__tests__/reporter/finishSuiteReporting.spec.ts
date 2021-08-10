@@ -21,7 +21,7 @@ describe('finish report suite', () => {
   const reporter = setupReporter(['launchId', 'suites']);
   const endTime = Date.now();
 
-  reporter.reportTaskDone(endTime, undefined, undefined);
+  reporter.reportTaskDone(endTime);
 
   test('client.finishTestItem should be called', () => {
     expect(reporter['client'].finishTestItem).toHaveBeenCalledTimes(1);
