@@ -15,5 +15,6 @@
  *
  */
 
-export { configureReporter } from './configureReporter';
-export { PublicReportingAPI } from './publicReportingAPI';
+import { getNewReporter } from './createReporter';
+
+export = getNewReporter;

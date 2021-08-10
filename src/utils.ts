@@ -16,8 +16,11 @@
  */
 
 import path from 'path';
+import fs from 'fs';
+// @ts-ignore
 import { version as pjsonVersion, name as pjsonName } from '../package.json';
 import { Attribute, StartLaunchRQ, ReportPortalConfig } from './models';
+import { RP_CONFIG_FILE_NAME } from './constants';
 
 export const getLastItem = <T>(items: T[] = []): T => items[items.length - 1];
 
@@ -71,4 +74,16 @@ export const getCodeRef = (basePath: string, testName: string | Array<string>): 
   const name = Array.isArray(testName) ? testName.join('/') : testName;
 
   return [relativePath, name].join('/');
+};
+
+export const getConfig = (providedConfig?: ReportPortalConfig): ReportPortalConfig => {
+  try {
+    if (!providedConfig || Object.keys(providedConfig).length === 0) {
+      return JSON.parse(fs.readFileSync(path.resolve(RP_CONFIG_FILE_NAME)).toString());
+    }
+  } catch (e) {
+    console.error('Cannot correctly parse RP options from rp.json file.', e);
+  }
+
+  return providedConfig;
 };

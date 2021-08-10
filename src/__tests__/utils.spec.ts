@@ -16,6 +16,7 @@
  */
 
 import path from 'path';
+// @ts-ignore
 import packageJson from '../../package.json';
 import {
   getAgentInfo,

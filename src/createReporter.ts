@@ -18,5 +18,7 @@
 import { Reporter } from './reporter';
 import { ReportPortalConfig } from './models';
 
-export const configureReporter = (config: ReportPortalConfig) => (): Reporter =>
-  new Reporter(config);
+export function getNewReporter(): Reporter {
+  return new Reporter();
+}
+export const createReporter = (config: ReportPortalConfig) => (): Reporter => new Reporter(config);

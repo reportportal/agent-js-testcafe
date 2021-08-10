@@ -16,9 +16,9 @@
  */
 
 import ClientPublicReportingAPI from '@reportportal/client-javascript/lib/publicReportingAPI';
-import { PublicReportingAPI } from '../../publicReportingAPI';
+import { ReportingApi } from '../../reportingApi';
 
-describe('PublicReportingAPI', () => {
+describe('ReportingApi', () => {
   describe('Item status reporting', () => {
     const publicReportingAPIStatusMethods = [
       { method: 'setStatusPassed', status: 'passed' },
@@ -37,7 +37,7 @@ describe('PublicReportingAPI', () => {
           .spyOn(ClientPublicReportingAPI, 'setStatus')
           .mockImplementation(() => {});
         // @ts-ignore
-        PublicReportingAPI[method]();
+        ReportingApi[method]();
 
         expect(spySetStatus).toHaveBeenCalledWith(status);
       });
@@ -62,7 +62,7 @@ describe('PublicReportingAPI', () => {
           .spyOn(ClientPublicReportingAPI, 'setLaunchStatus')
           .mockImplementation(() => {});
         // @ts-ignore
-        PublicReportingAPI[method]();
+        ReportingApi[method]();
 
         expect(spySetStatus).toHaveBeenCalledWith(status);
       });
@@ -84,7 +84,7 @@ describe('PublicReportingAPI', () => {
         message: '',
       };
 
-      PublicReportingAPI.log();
+      ReportingApi.log();
 
       expect(spyAddLog).toHaveBeenCalledWith(expectedAddLogObj);
     });
@@ -97,7 +97,7 @@ describe('PublicReportingAPI', () => {
         message: 'message text',
       };
 
-      PublicReportingAPI.log('ERROR', 'message text');
+      ReportingApi.log('ERROR', 'message text');
 
       expect(spyAddLog).toHaveBeenCalledWith(expectedAddLogObj);
     });
@@ -111,7 +111,7 @@ describe('PublicReportingAPI', () => {
         file,
       };
 
-      PublicReportingAPI.log('ERROR', 'message text', file);
+      ReportingApi.log('ERROR', 'message text', file);
 
       expect(spyAddLog).toHaveBeenCalledWith(expectedAddLogObj);
     });
@@ -125,7 +125,7 @@ describe('PublicReportingAPI', () => {
         file,
       };
 
-      PublicReportingAPI.trace('message text', file);
+      ReportingApi.trace('message text', file);
 
       expect(spyAddLog).toHaveBeenCalledWith(expectedAddLogObj);
     });
@@ -139,7 +139,7 @@ describe('PublicReportingAPI', () => {
         file,
       };
 
-      PublicReportingAPI.debug('message text', file);
+      ReportingApi.debug('message text', file);
 
       expect(spyAddLog).toHaveBeenCalledWith(expectedAddLogObj);
     });
@@ -153,7 +153,7 @@ describe('PublicReportingAPI', () => {
         file,
       };
 
-      PublicReportingAPI.info('message text', file);
+      ReportingApi.info('message text', file);
 
       expect(spyAddLog).toHaveBeenCalledWith(expectedAddLogObj);
     });
@@ -167,7 +167,7 @@ describe('PublicReportingAPI', () => {
         file,
       };
 
-      PublicReportingAPI.warn('message text', file);
+      ReportingApi.warn('message text', file);
 
       expect(spyAddLog).toHaveBeenCalledWith(expectedAddLogObj);
     });
@@ -181,7 +181,7 @@ describe('PublicReportingAPI', () => {
         file,
       };
 
-      PublicReportingAPI.error('message text', file);
+      ReportingApi.error('message text', file);
 
       expect(spyAddLog).toHaveBeenCalledWith(expectedAddLogObj);
     });
@@ -195,7 +195,7 @@ describe('PublicReportingAPI', () => {
         file,
       };
 
-      PublicReportingAPI.fatal('message text', file);
+      ReportingApi.fatal('message text', file);
 
       expect(spyAddLog).toHaveBeenCalledWith(expectedAddLogObj);
     });
@@ -210,7 +210,7 @@ describe('PublicReportingAPI', () => {
         message: '',
       };
 
-      PublicReportingAPI.launchLog();
+      ReportingApi.launchLog();
 
       expect(spyAddLog).toHaveBeenCalledWith(expectedAddLogObj);
     });
@@ -226,7 +226,7 @@ describe('PublicReportingAPI', () => {
         file,
       };
 
-      PublicReportingAPI.launchLog('ERROR', 'message text', file);
+      ReportingApi.launchLog('ERROR', 'message text', file);
 
       expect(spyAddLog).toHaveBeenCalledWith(expectedAddLogObj);
     });
@@ -242,7 +242,7 @@ describe('PublicReportingAPI', () => {
         file,
       };
 
-      PublicReportingAPI.launchTrace('message text', file);
+      ReportingApi.launchTrace('message text', file);
 
       expect(spyAddLog).toHaveBeenCalledWith(expectedAddLogObj);
     });
@@ -258,7 +258,7 @@ describe('PublicReportingAPI', () => {
         file,
       };
 
-      PublicReportingAPI.launchDebug('message text', file);
+      ReportingApi.launchDebug('message text', file);
 
       expect(spyAddLog).toHaveBeenCalledWith(expectedAddLogObj);
     });
@@ -274,7 +274,7 @@ describe('PublicReportingAPI', () => {
         file,
       };
 
-      PublicReportingAPI.launchInfo('message text', file);
+      ReportingApi.launchInfo('message text', file);
 
       expect(spyAddLog).toHaveBeenCalledWith(expectedAddLogObj);
     });
@@ -290,7 +290,7 @@ describe('PublicReportingAPI', () => {
         file,
       };
 
-      PublicReportingAPI.launchWarn('message text', file);
+      ReportingApi.launchWarn('message text', file);
 
       expect(spyAddLog).toHaveBeenCalledWith(expectedAddLogObj);
     });
@@ -306,7 +306,7 @@ describe('PublicReportingAPI', () => {
         file,
       };
 
-      PublicReportingAPI.launchError('message text', file);
+      ReportingApi.launchError('message text', file);
 
       expect(spyAddLog).toHaveBeenCalledWith(expectedAddLogObj);
     });
@@ -322,7 +322,7 @@ describe('PublicReportingAPI', () => {
         file,
       };
 
-      PublicReportingAPI.launchFatal('message text', file);
+      ReportingApi.launchFatal('message text', file);
 
       expect(spyAddLog).toHaveBeenCalledWith(expectedAddLogObj);
     });

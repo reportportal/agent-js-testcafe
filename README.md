@@ -106,11 +106,11 @@ test('My first test', async (page) => {
 
 Only `attributes` and `description` properties supported.
 
-### Using `PublicReportingAPI`:
+### Using `ReportingApi`:
 
-To start using the `PublicReportingAPI` in tests, just import it from `'@reportportal/agent-js-testcafe'`:
+To start using the `ReportingApi` in tests, just import it from `'@reportportal/agent-js-testcafe'`:
 ```javascript
-const { PublicReportingAPI } = require('@reportportal/agent-js-testcafe');
+const { ReportingApi } = require('@reportportal/agent-js-testcafe');
 ```
 
 #### Reporting API methods
@@ -119,12 +119,12 @@ The API provide methods for attaching data (logs, attributes, testCaseId, status
 
 ##### addAttributes
 Add attributes(tags) to the current test. Should be called inside of corresponding test or fixture.<br/>
-`PublicReportingAPI.addAttributes(attributes: Array<Attribute>);`<br/>
+`ReportingApi.addAttributes(attributes: Array<Attribute>);`<br/>
 **required**: `attributes`<br/>
 Example:
 ```javascript
 test('should have the correct attributes', async (t) => {
-  PublicReportingAPI.addAttributes([
+  ReportingApi.addAttributes([
     {
       key: 'testKey',
       value: 'testValue',
@@ -139,20 +139,20 @@ test('should have the correct attributes', async (t) => {
 
 ##### setTestCaseId
 Set test case id to the current test. Should be called inside of corresponding test or fixture.<br/>
-`PublicReportingAPI.setTestCaseId(id: string);`<br/>
+`ReportingApi.setTestCaseId(id: string);`<br/>
 **required**: `id`<br/>
 If `testCaseId` not specified, it will be generated automatically.<br/>
 Example:
 ```javascript
 test('should have the correct testCaseId', async (t) => {
-  PublicReportingAPI.setTestCaseId('itemTestCaseId');
+  ReportingApi.setTestCaseId('itemTestCaseId');
   await t.expect(true).eql(true);
 });
 ```
 
 ##### log
 Send logs to report portal for the current test. Should be called inside of corresponding test or fixture.<br/>
-`PublicReportingAPI.log(level: LOG_LEVELS, message: string, file?: Attachment);`<br/>
+`ReportingApi.log(level: LOG_LEVELS, message: string, file?: Attachment);`<br/>
 **required**: `level`, `message`<br/>
 where `level` can be one of the following: *TRACE*, *DEBUG*, *WARN*, *INFO*, *ERROR*, *FATAL*<br/>
 Example:
@@ -165,7 +165,7 @@ test('should contain logs with attachments', async (page) => {
     type: 'image/jpg',
     content: fileContent.toString('base64'),
   };
-  PublicReportingAPI.log('INFO', 'info log with attachment', attachment);
+  ReportingApi.log('INFO', 'info log with attachment', attachment);
 
   await page.expect(true).eql(true);
 });
@@ -173,22 +173,22 @@ test('should contain logs with attachments', async (page) => {
 
 ##### info, debug, warn, error, trace, fatal
 Send logs with corresponding level to report portal for the current test or for provided by name. Should be called inside of corresponding test or fixture.<br/>
-`PublicReportingAPI.info(message: string, file?: Attachment);`<br/>
-`PublicReportingAPI.debug(message: string, file?: Attachment);`<br/>
-`PublicReportingAPI.warn(message: string, file?: Attachment);`<br/>
-`PublicReportingAPI.error(message: string, file?: Attachment);`<br/>
-`PublicReportingAPI.trace(message: string, file?: Attachment);`<br/>
-`PublicReportingAPI.fatal(message: string, file?: Attachment);`<br/>
+`ReportingApi.info(message: string, file?: Attachment);`<br/>
+`ReportingApi.debug(message: string, file?: Attachment);`<br/>
+`ReportingApi.warn(message: string, file?: Attachment);`<br/>
+`ReportingApi.error(message: string, file?: Attachment);`<br/>
+`ReportingApi.trace(message: string, file?: Attachment);`<br/>
+`ReportingApi.fatal(message: string, file?: Attachment);`<br/>
 **required**: `message`<br/>
 Example:
 ```javascript
 test('should contain logs with attachments', async (page) => {
-    PublicReportingAPI.info('Log message');
-    PublicReportingAPI.debug('Log message');
-    PublicReportingAPI.warn('Log message');
-    PublicReportingAPI.error('Log message');
-    PublicReportingAPI.trace('Log message');
-    PublicReportingAPI.fatal('Log message');
+    ReportingApi.info('Log message');
+    ReportingApi.debug('Log message');
+    ReportingApi.warn('Log message');
+    ReportingApi.error('Log message');
+    ReportingApi.trace('Log message');
+    ReportingApi.fatal('Log message');
     
     await page.expect(true).eql(true);
 });
@@ -196,7 +196,7 @@ test('should contain logs with attachments', async (page) => {
 
 ##### launchLog
 Send logs to report portal for the current launch. Should be called inside of the any test or fixture.<br/>
-`PublicReportingAPI.launchLog(level: LOG_LEVELS, message: string, file?: Attachment);`<br/>
+`ReportingApi.launchLog(level: LOG_LEVELS, message: string, file?: Attachment);`<br/>
 **required**: `level`, `message`<br/>
 where `level` can be one of the following: *TRACE*, *DEBUG*, *WARN*, *INFO*, *ERROR*, *FATAL*<br/>
 Example:
@@ -209,7 +209,7 @@ test('should contain logs with attachments', async (page) => {
     type: 'image/jpg',
     content: fileContent.toString('base64'),
   };
-  PublicReportingAPI.launchLog('INFO', 'info log with attachment', attachment);
+  ReportingApi.launchLog('INFO', 'info log with attachment', attachment);
 
   await page.expect(true).eql(true);
 });
@@ -217,22 +217,22 @@ test('should contain logs with attachments', async (page) => {
 
 ##### launchInfo, launchDebug, launchWarn, launchError, launchTrace, launchFatal
 Send logs with corresponding level to report portal for the current launch. Should be called inside of the any test or fixture.<br/>
-`PublicReportingAPI.launchInfo(message: string, file?: Attachment);`<br/>
-`PublicReportingAPI.launchDebug(message: string, file?: Attachment);`<br/>
-`PublicReportingAPI.launchWarn(message: string, file?: Attachment);`<br/>
-`PublicReportingAPI.launchError(message: string, file?: Attachment);`<br/>
-`PublicReportingAPI.launchTrace(message: string, file?: Attachment);`<br/>
-`PublicReportingAPI.launchFatal(message: string, file?: Attachment);`<br/>
+`ReportingApi.launchInfo(message: string, file?: Attachment);`<br/>
+`ReportingApi.launchDebug(message: string, file?: Attachment);`<br/>
+`ReportingApi.launchWarn(message: string, file?: Attachment);`<br/>
+`ReportingApi.launchError(message: string, file?: Attachment);`<br/>
+`ReportingApi.launchTrace(message: string, file?: Attachment);`<br/>
+`ReportingApi.launchFatal(message: string, file?: Attachment);`<br/>
 **required**: `message`<br/>
 Example:
 ```javascript
 test('should contain logs with attachments', async (page) => {
-    PublicReportingAPI.launchInfo('Log message');
-    PublicReportingAPI.launchDebug('Log message');
-    PublicReportingAPI.launchWarn('Log message');
-    PublicReportingAPI.launchError('Log message');
-    PublicReportingAPI.launchTrace('Log message');
-    PublicReportingAPI.launchFatal('Log message');
+    ReportingApi.launchInfo('Log message');
+    ReportingApi.launchDebug('Log message');
+    ReportingApi.launchWarn('Log message');
+    ReportingApi.launchError('Log message');
+    ReportingApi.launchTrace('Log message');
+    ReportingApi.launchFatal('Log message');
     
     await page.expect(true).eql(true);
 });
@@ -240,13 +240,13 @@ test('should contain logs with attachments', async (page) => {
 
 ##### setStatus
 Assign corresponding status to the current test item.<br/>
-`PublicReportingAPI.setStatus(status: string);`<br/>
+`ReportingApi.setStatus(status: string);`<br/>
 **required**: `status`<br/>
 where `status` must be one of the following: *passed*, *failed*, *stopped*, *skipped*, *interrupted*, *cancelled*, *info*, *warn*<br/>
 Example:
 ```javascript
 test('should have status FAILED', async (page) => {
-    PublicReportingAPI.setStatus('failed');
+    ReportingApi.setStatus('failed');
     
     await page.expect(true).eql(true);
 });
@@ -254,17 +254,17 @@ test('should have status FAILED', async (page) => {
 
 ##### setStatusFailed, setStatusPassed, setStatusSkipped, setStatusStopped, setStatusInterrupted, setStatusCancelled, setStatusInfo, setStatusWarn
  Assign corresponding status to the current test item.<br/>
-`PublicReportingAPI.setStatusFailed();`<br/>
-`PublicReportingAPI.setStatusPassed();`<br/>
-`PublicReportingAPI.setStatusSkipped();`<br/>
-`PublicReportingAPI.setStatusStopped();`<br/>
-`PublicReportingAPI.setStatusInterrupted();`<br/>
-`PublicReportingAPI.setStatusCancelled();`<br/>
-`PublicReportingAPI.setStatusInfo();`<br/>
-`PublicReportingAPI.setStatusWarn();`<br/>
+`ReportingApi.setStatusFailed();`<br/>
+`ReportingApi.setStatusPassed();`<br/>
+`ReportingApi.setStatusSkipped();`<br/>
+`ReportingApi.setStatusStopped();`<br/>
+`ReportingApi.setStatusInterrupted();`<br/>
+`ReportingApi.setStatusCancelled();`<br/>
+`ReportingApi.setStatusInfo();`<br/>
+`ReportingApi.setStatusWarn();`<br/>
 Example:
 ```javascript
-test('should call PublicReportingAPI to set statuses', async (page) => {
+test('should call ReportingApi to set statuses', async (page) => {
     ReportingAPI.setStatusFailed();
     ReportingAPI.setStatusPassed();
     ReportingAPI.setStatusSkipped();
@@ -278,13 +278,13 @@ test('should call PublicReportingAPI to set statuses', async (page) => {
 
 ##### setLaunchStatus
 Assign corresponding status to the current launch.<br/>
-`PublicReportingAPI.setLaunchStatus(status: string);`<br/>
+`ReportingApi.setLaunchStatus(status: string);`<br/>
 **required**: `status`<br/>
 where `status` must be one of the following: *passed*, *failed*, *stopped*, *skipped*, *interrupted*, *cancelled*, *info*, *warn*<br/>
 Example:
 ```javascript
 test('launch should have status FAILED', async (page) => {
-    PublicReportingAPI.setLaunchStatus('failed');
+    ReportingApi.setLaunchStatus('failed');
     
     await page.expect(true).eql(true);
 });
@@ -292,17 +292,17 @@ test('launch should have status FAILED', async (page) => {
 
 ##### setLaunchStatusFailed, setLaunchStatusPassed, setLaunchStatusSkipped, setLaunchStatusStopped, setLaunchStatusInterrupted, setLaunchStatusCancelled, setLaunchStatusInfo, setLaunchStatusWarn
  Assign corresponding status to the current test item.<br/>
-`PublicReportingAPI.setLaunchStatusFailed();`<br/>
-`PublicReportingAPI.setLaunchStatusPassed();`<br/>
-`PublicReportingAPI.setLaunchStatusSkipped();`<br/>
-`PublicReportingAPI.setLaunchStatusStopped();`<br/>
-`PublicReportingAPI.setLaunchStatusInterrupted();`<br/>
-`PublicReportingAPI.setLaunchStatusCancelled();`<br/>
-`PublicReportingAPI.setLaunchStatusInfo();`<br/>
-`PublicReportingAPI.setLaunchStatusWarn();`<br/>
+`ReportingApi.setLaunchStatusFailed();`<br/>
+`ReportingApi.setLaunchStatusPassed();`<br/>
+`ReportingApi.setLaunchStatusSkipped();`<br/>
+`ReportingApi.setLaunchStatusStopped();`<br/>
+`ReportingApi.setLaunchStatusInterrupted();`<br/>
+`ReportingApi.setLaunchStatusCancelled();`<br/>
+`ReportingApi.setLaunchStatusInfo();`<br/>
+`ReportingApi.setLaunchStatusWarn();`<br/>
 Example:
 ```javascript
-test('should call PublicReportingAPI to set launch statuses', async (page) => {
+test('should call ReportingApi to set launch statuses', async (page) => {
     ReportingAPI.setLaunchStatusFailed();
     ReportingAPI.setLaunchStatusPassed();
     ReportingAPI.setLaunchStatusSkipped();

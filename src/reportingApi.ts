@@ -20,7 +20,7 @@ import { RP_STATUSES } from '@reportportal/client-javascript/lib/constants/statu
 import { LOG_LEVELS } from './constants';
 import { Attachment } from './models';
 
-export const PublicReportingAPI = {
+export const ReportingApi = {
   setLaunchStatus: ClientPublicReportingAPI.setLaunchStatus,
   setLaunchStatusPassed: (): void => ClientPublicReportingAPI.setLaunchStatus(RP_STATUSES.PASSED),
   setLaunchStatusFailed: (): void => ClientPublicReportingAPI.setLaunchStatus(RP_STATUSES.FAILED),
@@ -52,27 +52,27 @@ export const PublicReportingAPI = {
     file?: Attachment,
   ): void => ClientPublicReportingAPI.addLaunchLog({ level, message, file }),
   trace: (message: string, file?: Attachment): void =>
-    PublicReportingAPI.log(LOG_LEVELS.TRACE, message, file),
+    ReportingApi.log(LOG_LEVELS.TRACE, message, file),
   debug: (message: string, file?: Attachment): void =>
-    PublicReportingAPI.log(LOG_LEVELS.DEBUG, message, file),
+    ReportingApi.log(LOG_LEVELS.DEBUG, message, file),
   info: (message: string, file?: Attachment): void =>
-    PublicReportingAPI.log(LOG_LEVELS.INFO, message, file),
+    ReportingApi.log(LOG_LEVELS.INFO, message, file),
   warn: (message: string, file?: Attachment): void =>
-    PublicReportingAPI.log(LOG_LEVELS.WARN, message, file),
+    ReportingApi.log(LOG_LEVELS.WARN, message, file),
   error: (message: string, file?: Attachment): void =>
-    PublicReportingAPI.log(LOG_LEVELS.ERROR, message, file),
+    ReportingApi.log(LOG_LEVELS.ERROR, message, file),
   fatal: (message: string, file?: Attachment): void =>
-    PublicReportingAPI.log(LOG_LEVELS.FATAL, message, file),
+    ReportingApi.log(LOG_LEVELS.FATAL, message, file),
   launchTrace: (message: string, file?: Attachment): void =>
-    PublicReportingAPI.launchLog(LOG_LEVELS.TRACE, message, file),
+    ReportingApi.launchLog(LOG_LEVELS.TRACE, message, file),
   launchDebug: (message: string, file?: Attachment): void =>
-    PublicReportingAPI.launchLog(LOG_LEVELS.DEBUG, message, file),
+    ReportingApi.launchLog(LOG_LEVELS.DEBUG, message, file),
   launchInfo: (message: string, file?: Attachment): void =>
-    PublicReportingAPI.launchLog(LOG_LEVELS.INFO, message, file),
+    ReportingApi.launchLog(LOG_LEVELS.INFO, message, file),
   launchWarn: (message: string, file?: Attachment): void =>
-    PublicReportingAPI.launchLog(LOG_LEVELS.WARN, message, file),
+    ReportingApi.launchLog(LOG_LEVELS.WARN, message, file),
   launchError: (message: string, file?: Attachment): void =>
-    PublicReportingAPI.launchLog(LOG_LEVELS.ERROR, message, file),
+    ReportingApi.launchLog(LOG_LEVELS.ERROR, message, file),
   launchFatal: (message: string, file?: Attachment): void =>
-    PublicReportingAPI.launchLog(LOG_LEVELS.FATAL, message, file),
+    ReportingApi.launchLog(LOG_LEVELS.FATAL, message, file),
 };

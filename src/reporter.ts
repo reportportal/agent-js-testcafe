@@ -27,8 +27,13 @@ import {
   StartLaunchRQ,
   StartTestItemRQ,
 } from './models';
-import { getAgentInfo, getCodeRef, getLastItem, getStartLaunchObj } from './utils';
+import { getAgentInfo, getCodeRef, getLastItem, getStartLaunchObj, getConfig } from './utils';
 import { LOG_LEVELS, STATUSES, TEST_ITEM_TYPES } from './constants';
+
+const promiseErrorHandler = (promise: Promise<any>, message = '') =>
+  promise.catch((err) => {
+    console.error(message, err);
+  });
 
 export interface TestItem {
   id: string;
@@ -57,12 +62,15 @@ export class Reporter {
   private suites: Suite[];
   private testItems: TestItem[];
   private customLaunchStatus: string;
+  private promises: Promise<any>[];
 
-  constructor(config: ReportPortalConfig) {
+  constructor(providedConfig?: ReportPortalConfig) {
+    const config = getConfig(providedConfig);
     this.noColors = false;
     this.suites = [];
     this.testItems = [];
     this.customLaunchStatus = '';
+    this.promises = [];
 
     const agentInfo = getAgentInfo();
 
@@ -86,6 +94,10 @@ export class Reporter {
     process.off(EVENTS.ADD_ATTRIBUTES, this.addAttributes.bind(this));
     process.off(EVENTS.ADD_LOG, this.sendTestItemLog.bind(this));
     process.off(EVENTS.ADD_LAUNCH_LOG, this.sendLaunchLog.bind(this));
+  }
+
+  addRequestToPromisesQueue(promise: any, failMessage: string): void {
+    this.promises.push(promiseErrorHandler(promise, failMessage));
   }
 
   getCurrentSuiteId(): string {
@@ -131,7 +143,10 @@ export class Reporter {
     this.startTime = startTime;
     const startLaunchObj: StartLaunchRQ = getStartLaunchObj({ startTime }, this.config);
 
-    this.launchId = this.client.startLaunch(startLaunchObj).tempId;
+    const { tempId, promise } = this.client.startLaunch(startLaunchObj);
+
+    this.launchId = tempId;
+    this.addRequestToPromisesQueue(promise, 'Failed to start launch.');
   }
 
   reportFixtureStart(name: string, path: string, meta: RPItem): void {
@@ -143,8 +158,10 @@ export class Reporter {
       attributes: meta.attributes,
       codeRef,
     };
-    const suiteId = this.client.startTestItem(startSuiteObj, this.launchId).tempId;
-    this.suites.push({ id: suiteId, path, name });
+    const { tempId, promise } = this.client.startTestItem(startSuiteObj, this.launchId);
+
+    this.addRequestToPromisesQueue(promise, 'Failed to start suite.');
+    this.suites.push({ id: tempId, path, name });
   }
 
   reportTestStart(name: string, testMeta: RPItem): void {
@@ -157,8 +174,11 @@ export class Reporter {
       attributes: testMeta.attributes,
       codeRef,
     };
-    const stepId = this.client.startTestItem(startTestObj, this.launchId, parentId).tempId;
-    this.testItems.push({ name, id: stepId, description: testMeta.description });
+
+    const { tempId, promise } = this.client.startTestItem(startTestObj, this.launchId, parentId);
+
+    this.addRequestToPromisesQueue(promise, 'Failed to start test.');
+    this.testItems.push({ name, id: tempId, description: testMeta.description });
   }
 
   reportTestDone(name: string, testRunInfo: any): void {
@@ -191,16 +211,21 @@ export class Reporter {
       ...(attributes && { attributes }),
       ...(descriptionWithError && { description: descriptionWithError }),
     };
-    this.client.finishTestItem(testItemId, finishTestItemObj);
+    const { promise } = this.client.finishTestItem(testItemId, finishTestItemObj);
+
+    this.addRequestToPromisesQueue(promise, 'Failed to finish test.');
     this.testItems = this.testItems.filter((item) => item.id !== testItemId);
   }
 
-  reportTaskDone(endTime: number): void {
+  async reportTaskDone(endTime: number): Promise<void> {
     this.finishSuites();
-    this.client.finishLaunch(this.launchId, {
+    const { promise } = this.client.finishLaunch(this.launchId, {
       endTime,
       ...(this.customLaunchStatus && { status: this.customLaunchStatus }),
     });
+    this.addRequestToPromisesQueue(promise, 'Failed to finish launch.');
+
+    await Promise.all(this.promises);
     this.launchId = null;
     this.customLaunchStatus = '';
     this.unregisterRPListeners();
@@ -213,7 +238,8 @@ export class Reporter {
         ...(testCaseId && { testCaseId }),
         ...(attributes && { attributes }),
       };
-      this.client.finishTestItem(id, finishSuiteObj);
+      const { promise } = this.client.finishTestItem(id, finishSuiteObj);
+      this.addRequestToPromisesQueue(promise, 'Failed to finish suite.');
     });
     this.suites = [];
   }
