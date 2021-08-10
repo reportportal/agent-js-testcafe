@@ -126,7 +126,7 @@ export class Reporter {
     }
   }
 
-  reportTaskStart(startTime: number, userAgents: string[], testCount: number): void {
+  reportTaskStart(startTime: number): void {
     this.registerRPListeners();
     this.startTime = startTime;
     const startLaunchObj: StartLaunchRQ = getStartLaunchObj({ startTime }, this.config);
@@ -195,7 +195,7 @@ export class Reporter {
     this.testItems = this.testItems.filter((item) => item.id !== testItemId);
   }
 
-  reportTaskDone(endTime: number, passed: number, warnings: string[]): void {
+  reportTaskDone(endTime: number): void {
     this.finishSuites();
     this.client.finishLaunch(this.launchId, {
       endTime,
@@ -218,8 +218,8 @@ export class Reporter {
     this.suites = [];
   }
 
-  sendLogsOnFail(errors: any, testItemId: string): void {
-    errors.forEach((error: any) => {
+  sendLogsOnFail(errors: object[], testItemId: string): void {
+    errors.forEach((error: object) => {
       this.client.sendLog(testItemId, {
         level: LOG_LEVELS.ERROR,
         // @ts-ignore
