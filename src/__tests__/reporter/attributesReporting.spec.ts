@@ -41,7 +41,7 @@ describe('attributes reporting', function () {
                 value: 'value1',
             },
         ];
-        const expectedAttributes = [{ id: "testItemId", name: "test", attributes]
+        const expectedAttributes = [{ id: "testItemId", name: "test", attributes }];
 
         reporter.addAttributes({ attributes });
 
