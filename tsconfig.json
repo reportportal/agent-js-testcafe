@@ -15,7 +15,7 @@
     },
     "typeRoots": ["node_modules/@types", "./src/types"],
     "outDir": "./build",
-    "rootDir": ".",
+    "rootDir": "."
   },
   "include": ["./src/**/*"],
   "exclude": ["node_modules", "examples", "src/__tests__"]

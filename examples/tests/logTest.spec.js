@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { PublicReportingAPI } from '@reportportal/agent-js-testcafe/build/src/publicReportingAPI';
+import { PublicReportingAPI } from '@reportportal/agent-js-testcafe';
 
 const attachments = [
   {

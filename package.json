@@ -13,7 +13,7 @@
     "dev": "npm run build && cd examples && npm run test"
   },
   "dependencies": {
-    "@reportportal/client-javascript": "^5.0.4",
+    "@reportportal/client-javascript": "^5.0.5",
     "strip-ansi": "^6.0.0"
   },
   "devDependencies": {
@@ -35,14 +35,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AmsterGet/testcafe-reportportal-integration.git"
+    "url": "https://github.com/reportportal/agent-js-testcafe.git"
   },
   "author": "ReportPortal.io",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/AmsterGet/testcafe-reportportal-integration/issues"
+    "url": "https://github.com/reportportal/agent-js-testcafe/issues"
   },
-  "homepage": "https://github.com/AmsterGet/testcafe-reportportal-integration#readme",
+  "homepage": "https://github.com/reportportal/agent-js-testcafe#readme",
   "engines": {
     "node": ">= 8.0.x"
   },
