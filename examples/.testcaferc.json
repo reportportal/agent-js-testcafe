@@ -1,8 +1,0 @@
-{
-  "browsers": "chrome",
-  "src": "./tests/**/*.js",
-  "screenshots": {
-    "path": "./screenshots/"
-  },
-  "takeScreenshotsOnFails": true
-}

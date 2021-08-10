@@ -22,7 +22,7 @@ module.exports = {
   testRegex: '/__tests__/.*\\.(test|spec)?\\.(ts|js)$',
   moduleFileExtensions: ['ts', 'js'],
   collectCoverageFrom: ['src/**/*.ts'],
-  coveragePathIgnorePatterns: ['/__tests__/', 'index.ts'],
+  coveragePathIgnorePatterns: ['/__tests__/', 'index.ts', 'src/types'],
   coverageThreshold: {
     global: {
       branches: 80,

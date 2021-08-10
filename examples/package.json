@@ -1,9 +1,0 @@
-{
-  "scripts": {
-    "test": "node testcafe.js"
-  },
-  "devDependencies": {
-    "@reportportal/agent-js-testcafe": "file://../../agent-js-testcafe",
-    "testcafe": "^1.9.3"
-  }
-}
