@@ -44,12 +44,12 @@ describe('attributes reporting', function() {
         value: 'value1',
       },
     ];
-    const expectedAttributes = [{ id: 'testItemId', name: 'test', attributes }];
+    const expectedSuites = [{ id: 'testItemId', name: 'test', attributes }];
 
     reporter.addAttributes({ attributes });
 
     // @ts-ignore access to the class private property
-    expect(reporter.testItems).toEqual(expectedAttributes);
+    expect(reporter.testItems).toEqual(expectedSuites);
   });
 
   it('onAddAttributes: should append attributes for current test in attributes map', function() {
@@ -76,7 +76,7 @@ describe('attributes reporting', function() {
       },
     ];
 
-    const expectedAttributes = [
+    const expectedSuites = [
       {
         id: 'testItemId',
         name: 'test',
@@ -101,7 +101,7 @@ describe('attributes reporting', function() {
     reporter.addAttributes({ attributes });
 
     // @ts-ignore access to the class private property
-    expect(reporter.testItems).toEqual(expectedAttributes);
+    expect(reporter.testItems).toEqual(expectedSuites);
   });
 
   it('onAddAttributes: should add attributes for current suite in attributes map', function() {
@@ -124,7 +124,7 @@ describe('attributes reporting', function() {
       },
     ];
 
-    const expectedAttributes = [
+    const expectedSuites = [
       {
         name: 'suite',
         id: 'suiteItemId',
@@ -144,27 +144,6 @@ describe('attributes reporting', function() {
     reporter.addAttributes({ attributes });
 
     // @ts-ignore access to the class private property
-    expect(reporter.suites).toEqual(expectedAttributes);
-  });
-
-  it('onAddAttributes without attributes: should not add attributes for current suite in attributes map', function() {
-    const currentSuite = {
-      name: 'suite',
-      id: 'suiteItemId',
-    };
-
-    // @ts-ignore access to the class private property
-    reporter.suites.push(currentSuite);
-    const expectedAttributes = [
-      {
-        name: 'suite',
-        id: 'suiteItemId',
-      },
-    ];
-
-    reporter.addAttributes({ attributes: [] });
-
-    // @ts-ignore access to the class private property
-    expect(reporter.suites).toEqual(expectedAttributes);
+    expect(reporter.suites).toEqual(expectedSuites);
   });
 });
