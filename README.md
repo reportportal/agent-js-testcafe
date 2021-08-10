@@ -1,7 +1,7 @@
 # @reportportal/agent-js-testcafe
 
 Agent for integration TestCafe with ReportPortal.
-* More about [NightwatchJS](https://testcafe.io/)
+* More about [TestCafe](https://testcafe.io/)
 * More about [ReportPortal](http://reportportal.io/)
 
 ## Installation
@@ -12,7 +12,7 @@ npm install --save-dev @reportportal/agent-js-testcafe
 ```
 ## Configuration
 
-**1.** Create rp.json file with reportportal configuration:
+**1.** Create `rp.json` file with reportportal configuration:
 ```json
 {
     "token": "00000000-0000-0000-0000-000000000000",
@@ -111,7 +111,6 @@ Only `attributes` and `description` properties supported.
 To start using the `PublicReportingAPI` in tests, just import it from `'@reportportal/agent-js-testcafe'`:
 ```javascript
 const { PublicReportingAPI } = require('@reportportal/agent-js-testcafe');
-
 ```
 
 #### Reporting API methods
@@ -239,7 +238,7 @@ test('should contain logs with attachments', async (page) => {
 });
 ```
 
-###### setStatus
+##### setStatus
 Assign corresponding status to the current test item.<br/>
 `PublicReportingAPI.setStatus(status: string);`<br/>
 **required**: `status`<br/>
@@ -253,7 +252,7 @@ test('should have status FAILED', async (page) => {
 });
 ```
 
-###### setStatusFailed, setStatusPassed, setStatusSkipped, setStatusStopped, setStatusInterrupted, setStatusCancelled, setStatusInfo, setStatusWarn
+##### setStatusFailed, setStatusPassed, setStatusSkipped, setStatusStopped, setStatusInterrupted, setStatusCancelled, setStatusInfo, setStatusWarn
  Assign corresponding status to the current test item.<br/>
 `PublicReportingAPI.setStatusFailed();`<br/>
 `PublicReportingAPI.setStatusPassed();`<br/>
@@ -263,7 +262,6 @@ test('should have status FAILED', async (page) => {
 `PublicReportingAPI.setStatusCancelled();`<br/>
 `PublicReportingAPI.setStatusInfo();`<br/>
 `PublicReportingAPI.setStatusWarn();`<br/>
-**required**: `message`<br/>
 Example:
 ```javascript
 test('should call PublicReportingAPI to set statuses', async (page) => {
@@ -275,6 +273,44 @@ test('should call PublicReportingAPI to set statuses', async (page) => {
     ReportingAPI.setStatusCancelled();
     ReportingAPI.setStatusInfo();
     ReportingAPI.setStatusWarn();
+});
+```
+
+##### setLaunchStatus
+Assign corresponding status to the current launch.<br/>
+`PublicReportingAPI.setLaunchStatus(status: string);`<br/>
+**required**: `status`<br/>
+where `status` must be one of the following: *passed*, *failed*, *stopped*, *skipped*, *interrupted*, *cancelled*, *info*, *warn*<br/>
+Example:
+```javascript
+test('launch should have status FAILED', async (page) => {
+    PublicReportingAPI.setLaunchStatus('failed');
+    
+    await page.expect(true).eql(true);
+});
+```
+
+##### setLaunchStatusFailed, setLaunchStatusPassed, setLaunchStatusSkipped, setLaunchStatusStopped, setLaunchStatusInterrupted, setLaunchStatusCancelled, setLaunchStatusInfo, setLaunchStatusWarn
+ Assign corresponding status to the current test item.<br/>
+`PublicReportingAPI.setLaunchStatusFailed();`<br/>
+`PublicReportingAPI.setLaunchStatusPassed();`<br/>
+`PublicReportingAPI.setLaunchStatusSkipped();`<br/>
+`PublicReportingAPI.setLaunchStatusStopped();`<br/>
+`PublicReportingAPI.setLaunchStatusInterrupted();`<br/>
+`PublicReportingAPI.setLaunchStatusCancelled();`<br/>
+`PublicReportingAPI.setLaunchStatusInfo();`<br/>
+`PublicReportingAPI.setLaunchStatusWarn();`<br/>
+Example:
+```javascript
+test('should call PublicReportingAPI to set launch statuses', async (page) => {
+    ReportingAPI.setLaunchStatusFailed();
+    ReportingAPI.setLaunchStatusPassed();
+    ReportingAPI.setLaunchStatusSkipped();
+    ReportingAPI.setLaunchStatusStopped();
+    ReportingAPI.setLaunchStatusInterrupted();
+    ReportingAPI.setLaunchStatusCancelled();
+    ReportingAPI.setLaunchStatusInfo();
+    ReportingAPI.setLaunchStatusWarn();
 });
 ```
 
