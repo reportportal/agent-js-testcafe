@@ -8,8 +8,11 @@ Agent for integration TestCafe with ReportPortal.
 
 Install the agent in your project:
 ```cmd
-npm install --save-dev @reportportal/agent-js-testcafe
+npm install --save-dev testcafe-reporter-agent-js-testcafe@npm:@reportportal/testcafe-reporter-agent-js-testcafe
 ```
+
+> **Note:** This package is namespaced. Therefore the following command can be used to install the reporter in a way that TestCafe can detect it. ([Related issue in TestCafé repository](https://github.com/DevExpress/testcafe/issues/4692))
+
 ## Configuration
 
 **1.** Create `rp.json` file with reportportal configuration:
@@ -50,17 +53,39 @@ npm install --save-dev @reportportal/agent-js-testcafe
 | debug                 | This flag allows seeing the logs of the client-javascript. Useful for debugging.|
 
 
-**2.** Create `testcafe.js` file and use the reporter with provided config:
+**2.1** Create `.testcaferc.json` TestCafe [configuration file](https://testcafe.io/documentation/402638/reference/configuration-file) and add `agent-js-testcafe` to the `reporter` property
+```json
+{
+  "browsers": "chrome",
+  "src": "./tests/**/*.js",
+  "screenshots": {
+    "path": "./screenshots/"
+  },
+  "reporter": [
+    {
+      "name": "list"
+    },
+    {
+      "name": "agent-js-testcafe"
+    }
+  ],
+  "takeScreenshotsOnFails": true
+}
+```
+
+Run tests via `testcafe` command.
+
+**2.2** As an alternative if you are using API you can create `testcafe.js` file and use the reporter with provided config manually:
 ```javascript
 const createTestCafe = require('testcafe');
-const { configureReporter } = require('@reportportal/agent-js-testcafe');
+const { createReporter } = require('testcafe-reporter-agent-js-testcafe/build/createReporter');
 const rpConfig = require('./rp.json');
 
 async function start() {
   const testcafe = await createTestCafe('localhost');
   const runner = testcafe.createRunner();
 
-  await runner.reporter(configureReporter(rpConfig)).run();
+  await runner.reporter(createReporter(rpConfig)).run(); // or just set 'agent-js-testcafe'
 
   await testcafe.close();
 }
@@ -68,9 +93,9 @@ async function start() {
 start();
 ```
 
-**3.** Run tests via `node testcafe.js`
+Run tests via `node testcafe.js`.
 
-**Note:** TestCafe options from `.testcaferc.json` can be overwritten programmatically in `testcafe.js`
+> **Note:** TestCafe options from `.testcaferc.json` can be overwritten programmatically in `testcafe.js`
 
 
 ## Reporting
@@ -110,7 +135,7 @@ Only `attributes` and `description` properties supported.
 
 To start using the `ReportingApi` in tests, just import it from `'@reportportal/agent-js-testcafe'`:
 ```javascript
-const { ReportingApi } = require('@reportportal/agent-js-testcafe');
+const { ReportingApi } = require('testcafe-reporter-agent-js-testcafe/build/reportingApi');
 ```
 
 #### Reporting API methods
