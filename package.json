@@ -1,6 +1,6 @@
 {
-  "name": "@reportportal/agent-js-testcafe",
-  "version": "5.0.0",
+  "name": "@reportportal/testcafe-reporter-agent-js-testcafe",
+  "version": "4.0.0",
   "description": "Agent for integration TestCafe with ReportPortal.",
   "main": "build/index.js",
   "scripts": {
@@ -8,14 +8,12 @@
     "clean": "rimraf ./build",
     "lint": "eslint \"src/**/*.ts\"",
     "format": "npm run lint -- --fix",
-    "test": "exit 0",
-    "test:coverage": "exit 0",
-    "link": "npm link && cd examples && npm link @reportportal/agent-js-testcafe",
-    "rebuild": "npm run build && npm link",
-    "example": "cd examples && npm run test"
+    "test": "jest",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
-    "@reportportal/client-javascript": "^5.0.2"
+    "@reportportal/client-javascript": "^5.0.5",
+    "strip-ansi": "^6.0.0"
   },
   "devDependencies": {
     "@types/jest": "^25.2.1",
@@ -36,14 +34,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AmsterGet/testcafe-reportportal-integration.git"
+    "url": "https://github.com/reportportal/agent-js-testcafe.git"
   },
   "author": "ReportPortal.io",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/AmsterGet/testcafe-reportportal-integration/issues"
+    "url": "https://github.com/reportportal/agent-js-testcafe/issues"
   },
-  "homepage": "https://github.com/AmsterGet/testcafe-reportportal-integration#readme",
+  "homepage": "https://github.com/reportportal/agent-js-testcafe#readme",
   "engines": {
     "node": ">= 8.0.x"
   },

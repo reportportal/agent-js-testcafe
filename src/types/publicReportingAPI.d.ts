@@ -1,5 +1,5 @@
 /*
- *  Copyright 2020 EPAM Systems
+ *  Copyright 2021 EPAM Systems
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,7 +15,14 @@
  *
  */
 
-export enum LAUNCH_MODES {
-  DEFAULT = 'DEFAULT',
-  DEBUG = 'DEBUG',
+declare module '@reportportal/client-javascript/lib/publicReportingAPI' {
+  export default class {
+    static setDescription(text: string, suite?: string): void;
+    static addAttributes(attributes: Interfaces.Attribute, suite?: string): void;
+    static addLog(log: Interfaces.LogRQ, suite?: string): void;
+    static addLaunchLog(log: Interfaces.LogRQ): void;
+    static setTestCaseId(testCaseId: string, suite?: string): void;
+    static setLaunchStatus(status: string): void;
+    static setStatus(status: string, suite?: string): void;
+  }
 }

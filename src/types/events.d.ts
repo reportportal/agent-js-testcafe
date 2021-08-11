@@ -1,5 +1,5 @@
 /*
- *  Copyright 2020 EPAM Systems
+ *  Copyright 2021 EPAM Systems
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,19 +15,6 @@
  *
  */
 
-const createTestCafe = require('testcafe');
-const configureReporter = require('@reportportal/agent-js-testcafe');
-const rpConfig = require('./rp.json');
-
-async function start() {
-    const testcafe = await createTestCafe('localhost', 1337, 1338);
-    const runner = testcafe.createRunner();
-
-    await runner
-        .reporter(configureReporter(rpConfig))
-        .run();
-
-    await testcafe.close();
+declare module '@reportportal/client-javascript/lib/constants/events' {
+  export const EVENTS: Interfaces.ObjUniversal;
 }
-
-start();

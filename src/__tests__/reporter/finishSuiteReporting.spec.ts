@@ -1,5 +1,5 @@
 /*
- *  Copyright 2020 EPAM Systems
+ *  Copyright 2021 EPAM Systems
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,21 +15,20 @@
  *
  */
 
-import { Attribute } from './common';
-import { LAUNCH_MODES } from '../constants';
+import { setupReporter } from '../mocks/ReporterMock';
 
-export interface ReportPortalConfig {
-  token: string;
-  project: string;
-  endpoint: string;
-  launch: string;
+describe('finish report suite', () => {
+  const reporter = setupReporter(['launchId', 'suites']);
+  const endTime = Date.now();
 
-  debug?: boolean;
-  attributes?: Array<Attribute>;
-  description?: string;
-  rerun?: boolean;
-  rerunOf?: string;
-  mode?: LAUNCH_MODES;
-  isLaunchMergeRequired?: boolean;
-  skippedIssue?: boolean;
-}
+  reporter.reportTaskDone(endTime);
+
+  test('client.finishTestItem should be called', () => {
+    expect(reporter['client'].finishTestItem).toHaveBeenCalledTimes(1);
+    expect(reporter['client'].finishTestItem).toHaveBeenCalledWith('tempSuiteItemId', {});
+  });
+
+  test('suites should be reset', () => {
+    expect(reporter['suites']).toEqual([]);
+  });
+});

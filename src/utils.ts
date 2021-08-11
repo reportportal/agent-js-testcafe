@@ -15,34 +15,75 @@
  *
  */
 
+import path from 'path';
+import fs from 'fs';
 // @ts-ignore
 import { version as pjsonVersion, name as pjsonName } from '../package.json';
 import { Attribute, StartLaunchRQ, ReportPortalConfig } from './models';
+import { RP_CONFIG_FILE_NAME } from './constants';
 
-export const getLastItem = (items: any[] = []): any => items[items.length - 1];
+export const getLastItem = <T>(items: T[] = []): T => items[items.length - 1];
 
-export const getAgentInfo = () => ({
+export const getAgentInfo = (): { version: string; name: string } => ({
   version: pjsonVersion,
   name: pjsonName,
 });
 
-export const getSystemAttributes = (): Array<Attribute> => ([{
-  key: 'agent',
-  value: `${pjsonName}|${pjsonVersion}`,
-  system: true,
-}]);
+export const getSystemAttributes = (skippedIssue = true): Array<Attribute> => {
+  const systemAttributes = [
+    {
+      key: 'agent',
+      value: `${pjsonName}|${pjsonVersion}`,
+      system: true,
+    },
+  ];
 
-export const getStartLaunchObj = (launchObj: StartLaunchRQ, config: ReportPortalConfig): StartLaunchRQ => {
-  const systemAttributes: Array<Attribute> = getSystemAttributes();
+  if (skippedIssue === false) {
+    const skippedIssueAttribute = {
+      key: 'skippedIssue',
+      value: 'false',
+      system: true,
+    };
+    systemAttributes.push(skippedIssueAttribute);
+  }
+
+  return systemAttributes;
+};
+
+export const getStartLaunchObj = (
+  launchObj: StartLaunchRQ,
+  config: ReportPortalConfig,
+): StartLaunchRQ => {
+  const systemAttributes: Array<Attribute> = getSystemAttributes(config.skippedIssue);
 
   return {
     ...launchObj,
-    attributes: config.attributes
-      ? config.attributes.concat(systemAttributes)
-      : systemAttributes,
+    attributes:
+      config.attributes && config.attributes.length
+        ? config.attributes.concat(systemAttributes)
+        : systemAttributes,
     description: config.description,
     rerun: config.rerun,
     rerunOf: config.rerunOf,
     mode: config.mode,
   };
+};
+
+export const getCodeRef = (basePath: string, testName: string | Array<string>): string => {
+  const relativePath = path.relative(process.cwd(), basePath).replace(/\\/g, '/');
+  const name = Array.isArray(testName) ? testName.join('/') : testName;
+
+  return [relativePath, name].join('/');
+};
+
+export const getConfig = (providedConfig?: ReportPortalConfig): ReportPortalConfig => {
+  try {
+    if (!providedConfig || Object.keys(providedConfig).length === 0) {
+      return JSON.parse(fs.readFileSync(path.resolve(RP_CONFIG_FILE_NAME)).toString());
+    }
+  } catch (e) {
+    console.error('Cannot correctly parse RP options from rp.json file.', e);
+  }
+
+  return providedConfig;
 };

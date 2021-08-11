@@ -1,5 +1,5 @@
 /*
- *  Copyright 2020 EPAM Systems
+ *  Copyright 2021 EPAM Systems
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,15 +15,10 @@
  *
  */
 
-declare module '@reportportal/client-javascript' {
-    export default class {
-        constructor(config: any, agentInfo?: any);
+import { Reporter } from './reporter';
+import { ReportPortalConfig } from './models';
 
-        public startLaunch(launchObj: any): any;
-        public finishLaunch(launchId: string, launchObj: any): any;
-        public startTestItem(itemObj: any, launchId: string, parentId?: string): any;
-        public finishTestItem(itemId: string, itemObj: any): any;
-        public sendLog(itemId: string, itemObj: any, fileObj?: any): any;
-        public checkConnect(): any;
-    }
+export function getNewReporter(): Reporter {
+  return new Reporter();
 }
+export const createReporter = (config: ReportPortalConfig) => (): Reporter => new Reporter(config);

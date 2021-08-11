@@ -20,3 +20,5 @@ export { LAUNCH_MODES } from './launchModes';
 export { LOG_LEVELS } from './logLevels';
 export { STATUSES } from './statuses';
 export { TEST_ITEM_TYPES } from './testItemTypes';
+
+export const RP_CONFIG_FILE_NAME = 'rp.json';

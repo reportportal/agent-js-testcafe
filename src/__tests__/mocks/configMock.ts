@@ -1,5 +1,5 @@
 /*
- *  Copyright 2020 EPAM Systems
+ *  Copyright 2021 EPAM Systems
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,7 +15,13 @@
  *
  */
 
-export enum LAUNCH_MODES {
-  DEFAULT = 'DEFAULT',
-  DEBUG = 'DEBUG',
-}
+import { ReportPortalConfig } from '../../models';
+
+export const config: ReportPortalConfig = {
+  token: '00000000-0000-0000-0000-000000000000',
+  endpoint: 'https://reportportal.server/api/v1',
+  project: 'ProjectName',
+  launch: 'LaunchName',
+  description: 'Launch description',
+  attributes: [],
+};

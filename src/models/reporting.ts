@@ -24,8 +24,8 @@ export interface StartTestItemRQ extends RPItemStartRQ {
 
   parameters?: Array<Parameter>;
   codeRef?: string;
-  hasStats?: boolean,
-  retry?: boolean,
+  hasStats?: boolean;
+  retry?: boolean;
   launchUuid?: string;
   testCaseHash?: number;
   testCaseId?: string;
@@ -36,22 +36,22 @@ export interface StartTestItemRQ extends RPItemStartRQ {
 export interface FinishTestItemRQ extends RPItemFinishRQ {
   launchUuid?: string;
   testCaseId?: string;
-  retry?: boolean,
-  issue?: Issue,
+  retry?: boolean;
+  issue?: Issue;
 }
 
 export interface StartLaunchRQ extends RPItemStartRQ {
-  rerun?: boolean,
-  rerunOf?: string,
+  rerun?: boolean;
+  rerunOf?: string;
   mode?: LAUNCH_MODES;
 }
 
-export interface FinishLaunchRQ extends RPItemFinishRQ {}
+export type FinishLaunchRQ = RPItemFinishRQ;
 
 export interface Attachment {
-  name: string,
-  type: FILE_TYPES | string,
-  content: string | Buffer,
+  name: string;
+  type: FILE_TYPES | string;
+  content: string | Buffer;
 }
 
 export interface LogRQ {
