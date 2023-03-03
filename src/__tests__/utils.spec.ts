@@ -28,8 +28,8 @@ import {
 import { StartLaunchRQ } from '../models';
 import { config } from './mocks/configMock';
 
-describe('getAgentInfo', function() {
-  test('should return the name and version of application from package.json file', function() {
+describe('getAgentInfo', function () {
+  test('should return the name and version of application from package.json file', function () {
     const agentInfo = getAgentInfo();
 
     expect(agentInfo.name).toBe(packageJson.name);
@@ -37,7 +37,7 @@ describe('getAgentInfo', function() {
   });
 });
 
-describe('getSystemAttributes', function() {
+describe('getSystemAttributes', function () {
   const expectedRes = [
     {
       key: 'agent',
@@ -45,7 +45,7 @@ describe('getSystemAttributes', function() {
       system: true,
     },
   ];
-  test('should return the list of system attributes', function() {
+  test('should return the list of system attributes', function () {
     const systemAttributes = getSystemAttributes();
 
     expect(systemAttributes).toEqual(expectedRes);

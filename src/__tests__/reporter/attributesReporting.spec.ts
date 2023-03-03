@@ -17,13 +17,13 @@
 import { Reporter, TestItem } from '../../reporter';
 import { config } from '../mocks/configMock';
 
-describe('attributes reporting', function() {
+describe('attributes reporting', function () {
   let reporter: Reporter;
-  beforeAll(function() {
+  beforeAll(function () {
     reporter = new Reporter(config);
   });
 
-  afterEach(function() {
+  afterEach(function () {
     // @ts-ignore access to the class private property
     reporter.testItems = [];
     // @ts-ignore access to the class private property
@@ -31,7 +31,7 @@ describe('attributes reporting', function() {
     jest.clearAllMocks();
   });
 
-  it('onAddAttributes: should add attributes for current test in attributes map', function() {
+  it('onAddAttributes: should add attributes for current test in attributes map', function () {
     const currentTest = {
       name: 'test',
       id: 'testItemId',
@@ -52,7 +52,7 @@ describe('attributes reporting', function() {
     expect(reporter.testItems).toEqual(expectedSuites);
   });
 
-  it('onAddAttributes: should append attributes for current test in attributes map', function() {
+  it('onAddAttributes: should append attributes for current test in attributes map', function () {
     const currentTest: TestItem = {
       name: 'test',
       id: 'testItemId',
@@ -104,7 +104,7 @@ describe('attributes reporting', function() {
     expect(reporter.testItems).toEqual(expectedSuites);
   });
 
-  it('onAddAttributes: should add attributes for current suite in attributes map', function() {
+  it('onAddAttributes: should add attributes for current suite in attributes map', function () {
     const currentSuite = {
       name: 'suite',
       id: 'suiteItemId',
