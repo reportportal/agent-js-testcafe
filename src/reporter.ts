@@ -55,13 +55,21 @@ interface Suite {
 
 export class Reporter {
   private noColors: boolean;
+
   private config: ReportPortalConfig;
+
   private client: RPClient;
+
   private startTime: number;
+
   private launchId: string;
+
   private suites: Suite[];
+
   private testItems: TestItem[];
+
   private customLaunchStatus: string;
+
   private promises: Promise<any>[];
 
   constructor(providedConfig?: ReportPortalConfig) {
@@ -115,9 +123,8 @@ export class Reporter {
     if (suite) {
       suite.testCaseId = testCaseId;
     } else {
-      this.testItems[
-        this.testItems.findIndex((item) => item.id === testItemId)
-      ].testCaseId = testCaseId;
+      this.testItems[this.testItems.findIndex((item) => item.id === testItemId)].testCaseId =
+        testCaseId;
     }
   }
 
@@ -131,9 +138,8 @@ export class Reporter {
     if (suite) {
       suite.attributes = (suite.attributes || []).concat(attributes);
     } else {
-      const currentTest = this.testItems[
-        this.testItems.findIndex((item) => item.id === testItemId)
-      ];
+      const currentTest =
+        this.testItems[this.testItems.findIndex((item) => item.id === testItemId)];
       currentTest.attributes = (currentTest.attributes || []).concat(attributes);
     }
   }
@@ -244,8 +250,8 @@ export class Reporter {
     this.suites = [];
   }
 
-  sendLogsOnFail(errors: object[], testItemId: string): void {
-    errors.forEach((error: object) => {
+  sendLogsOnFail(errors: Record<string, unknown>[], testItemId: string): void {
+    errors.forEach((error: Record<string, unknown>) => {
       this.client.sendLog(testItemId, {
         level: LOG_LEVELS.ERROR,
         // @ts-ignore
