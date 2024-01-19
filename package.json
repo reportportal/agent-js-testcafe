@@ -46,7 +46,7 @@
   },
   "homepage": "https://github.com/reportportal/agent-js-testcafe#readme",
   "engines": {
-    "node": ">=10.x"
+    "node": ">=12.x"
   },
   "keywords": [
     "epam",
