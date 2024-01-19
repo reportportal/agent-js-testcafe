@@ -1,6 +1,6 @@
 # @reportportal/agent-js-testcafe
 
-Agent for integration TestCafe with ReportPortal.
+Agent to integrate TestCafe with ReportPortal.
 * More about [TestCafe](https://testcafe.io/)
 * More about [ReportPortal](http://reportportal.io/)
 

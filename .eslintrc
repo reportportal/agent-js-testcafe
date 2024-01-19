@@ -6,7 +6,7 @@
   "extends": [
     "airbnb-typescript/base",
     "plugin:@typescript-eslint/recommended",
-    "prettier/@typescript-eslint",
+    "plugin:import/recommended",
     "plugin:prettier/recommended"
   ],
   "plugins": ["prettier"],
@@ -18,7 +18,7 @@
   "parserOptions": {
     "ecmaVersion": 2018,
     "sourceType": "module",
-    "project":  "./tsconfig.json"
+    "project":  "./tsconfig.eslint.json"
   },
   "rules": {
     "no-plusplus": 0,
@@ -30,7 +30,9 @@
     "func-names": 0,
     "import/prefer-default-export": 0,
     "@typescript-eslint/ban-ts-ignore": 0,
+    "@typescript-eslint/ban-ts-comment": 0,
     "@typescript-eslint/no-implied-eval": 0,
-    "dot-notation": 0
+    "@typescript-eslint/dot-notation": 0,
+    "@typescript-eslint/naming-convention": 0
   }
 }

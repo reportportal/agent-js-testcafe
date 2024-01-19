@@ -17,13 +17,13 @@
 import { Reporter, TestItem } from '../../reporter';
 import { config } from '../mocks/configMock';
 
-describe('test case id reporting', function() {
+describe('test case id reporting', function () {
   let reporter: Reporter;
-  beforeAll(function() {
+  beforeAll(function () {
     reporter = new Reporter(config);
   });
 
-  afterEach(function() {
+  afterEach(function () {
     // @ts-ignore access to the class private property
     reporter.testItems = [];
     // @ts-ignore access to the class private property
@@ -31,7 +31,7 @@ describe('test case id reporting', function() {
     jest.clearAllMocks();
   });
 
-  it('onSetTestCaseId: should set test case id for current test in the testCaseIds map', function() {
+  it('onSetTestCaseId: should set test case id for current test in the testCaseIds map', function () {
     const currentTest: TestItem = {
       name: 'test',
       id: 'testItemId',
@@ -47,7 +47,7 @@ describe('test case id reporting', function() {
     expect(reporter.testItems).toEqual(expectedDescriptions);
   });
 
-  it('onSetTestCaseId: should overwrite test case id for current test in the testCaseIds map', function() {
+  it('onSetTestCaseId: should overwrite test case id for current test in the testCaseIds map', function () {
     const currentTest: TestItem = {
       name: 'test',
       id: 'testItemId',
@@ -70,7 +70,7 @@ describe('test case id reporting', function() {
     expect(reporter.testItems).toEqual(expectedDescriptions);
   });
 
-  it('onSetTestCaseId: should set test case id for current suite in testCaseIds map', function() {
+  it('onSetTestCaseId: should set test case id for current suite in testCaseIds map', function () {
     const currentSuite = {
       name: 'suite',
       id: 'suiteItemId',
