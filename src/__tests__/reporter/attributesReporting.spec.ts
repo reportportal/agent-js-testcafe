@@ -23,7 +23,7 @@ describe('attributes reporting', function () {
     reporter = new Reporter(config);
   });
 
-  afterEach(function () {
+  afterEach(function() {
     // @ts-ignore access to the class private property
     reporter.testItems = [];
     // @ts-ignore access to the class private property
