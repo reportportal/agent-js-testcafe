@@ -30,7 +30,8 @@ npm install --save-dev testcafe-reporter-agent-js-testcafe@npm:@reportportal/tes
     {
       "value": "YourValue"
     }
-  ]
+  ],
+  "description": "Your launch description"
 }
 ```
 
