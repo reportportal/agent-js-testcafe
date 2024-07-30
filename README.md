@@ -18,40 +18,40 @@ npm install --save-dev testcafe-reporter-agent-js-testcafe@npm:@reportportal/tes
 **1.** Create `rp.json` file with reportportal configuration:
 ```json
 {
-    "token": "00000000-0000-0000-0000-000000000000",
-    "endpoint": "https://your.reportportal.server/api/v1",
-    "project": "YourReportPortalProjectName",
-    "launch": "YourLauncherName",
-    "attributes": [
-        {
-            "key": "YourKey",
-            "value": "YourValue"
-        },
-        {
-            "value": "YourValue"
-        }
-    ],
-    "description": "Your launch description",
-    "rerun": true,
-    "rerunOf": "launchUuid of already existed launch",
-    "mode": "DEFAULT",
-    "skippedIssue": true,
-    "debug": false
+  "apiKey": "<API_KEY>",
+  "endpoint": "https://your.reportportal.server/api/v1",
+  "project": "YourReportPortalProjectName",
+  "launch": "YourLauncherName",
+  "attributes": [
+    {
+      "key": "YourKey",
+      "value": "YourValue"
+    },
+    {
+      "value": "YourValue"
+    }
+  ]
 }
 ```
 
-| Parameter             | Description                                                                                                       |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| token                 | User's Report Portal token from which you want to send requests. It can be found on the profile page of this user.|
-| endpoint              | URL of your server. For example 'https://server:8080/api/v1'.                                                     |
-| launch                | Name of launch at creation.                                                                                       |
-| project               | The name of the project in which the launches will be created.                                                    |
-| rerun                 | *Default: false.* Enable [rerun](https://github.com/reportportal/documentation/blob/master/src/md/src/DevGuides/rerun.md)|
-| rerunOf               | UUID of launch you want to rerun. If not specified, report portal will update the latest launch with the same name|
-| mode                  | Launch mode. Allowable values *DEFAULT* (by default) or *DEBUG*.|
-| skippedIssue          | *Default: true.* ReportPortal provides feature to mark skipped tests as not 'To Investigate' items on WS side.<br> Parameter could be equal boolean values:<br> *TRUE* - skipped tests considered as issues and will be marked as 'To Investigate' on Report Portal.<br> *FALSE* - skipped tests will not be marked as 'To Investigate' on application.|
-| debug                 | This flag allows seeing the logs of the client-javascript. Useful for debugging.|
-
+| Option                | Necessity  | Default   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+|-----------------------|------------|-----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| apiKey                | Required   |           | User's reportportal token from which you want to send requests. It can be found on the profile page of this user.                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| endpoint              | Required   |           | URL of your server. For example 'https://server:8080/api/v1'.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| launch                | Required   |           | Name of launch at creation.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| project               | Required   |           | The name of the project in which the launches will be created.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| attributes            | Optional   | []        | Launch attributes.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| description           | Optional   | ''        | Launch description.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| rerun                 | Optional   | false     | Enable [rerun](https://reportportal.io/docs/dev-guides/RerunDevelopersGuide)                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| rerunOf               | Optional   | Not set   | UUID of launch you want to rerun. If not specified, reportportal will update the latest launch with the same name                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| mode                  | Optional   | 'DEFAULT' | Results will be submitted to Launches page <br/> *'DEBUG'* - Results will be submitted to Debug page (values must be upper case).                                                                                                                                                                                                                                                                                                                                                                                                                |
+| debug                 | Optional   | false     | This flag allows seeing the logs of the client-javascript. Useful for debugging.                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| restClientConfig      | Optional   | Not set   | `axios` like http client [config](https://github.com/axios/axios#request-config). May contain `agent` property for configure [http(s)](https://nodejs.org/api/https.html#https_https_request_url_options_callback) client, and other client options e.g. `proxy`, [`timeout`](https://github.com/reportportal/client-javascript#timeout-30000ms-on-axios-requests). For debugging and displaying logs the `debug: true` option can be used. <br/> Visit [client-javascript](https://github.com/reportportal/client-javascript) for more details. |
+| headers               | Optional   | {}        | The object with custom headers for internal http client.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| launchUuidPrint       | Optional   | false     | Whether to print the current launch UUID.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| launchUuidPrintOutput | Optional   | 'STDOUT'  | Launch UUID printing output. Possible values: 'STDOUT', 'STDERR', 'FILE', 'ENVIRONMENT'. Works only if `launchUuidPrint` set to `true`. File format: `rp-launch-uuid-${launch_uuid}.tmp`. Env variable: `RP_LAUNCH_UUID`, note that the env variable is only available in the reporter process (it cannot be obtained from tests).                                                                                                                                                                                                               |
+| skippedIssue          | Optional   | true      | reportportal provides feature to mark skipped tests as not 'To Investigate'. <br/> Option could be equal boolean values: <br/> *true* - skipped tests considered as issues and will be marked as 'To Investigate' on reportportal. <br/> *false* - skipped tests will not be marked as 'To Investigate' on application.                                                                                                                                                                                                                          |
+| token                 | Deprecated | Not set   | Use `apiKey` instead.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 
 **2.1** Create `.testcaferc.json` TestCafe [configuration file](https://testcafe.io/documentation/402638/reference/configuration-file) and add `agent-js-testcafe` to the `reporter` property
 ```json
@@ -96,7 +96,6 @@ start();
 Run tests via `node testcafe.js`.
 
 > **Note:** TestCafe options from `.testcaferc.json` can be overwritten programmatically in `testcafe.js`
-
 
 ## Reporting
 
