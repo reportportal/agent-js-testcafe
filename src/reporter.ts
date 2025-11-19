@@ -17,7 +17,10 @@
 
 import RPClient from '@reportportal/client-javascript';
 import { EVENTS } from '@reportportal/client-javascript/lib/constants/events';
+import fs from 'fs';
+import * as nodePath from 'path';
 import stripAnsi from 'strip-ansi';
+import { FILE_TYPES, LOG_LEVELS, STATUSES, TEST_ITEM_TYPES } from './constants';
 import {
   Attribute,
   LogRQ,
@@ -27,8 +30,8 @@ import {
   StartLaunchRQ,
   StartTestItemRQ,
 } from './models';
-import { getAgentInfo, getCodeRef, getLastItem, getStartLaunchObj, getConfig } from './utils';
-import { LOG_LEVELS, STATUSES, TEST_ITEM_TYPES } from './constants';
+import { TestCafeReportDataItem } from './models/reporting';
+import { getAgentInfo, getCodeRef, getConfig, getLastItem, getStartLaunchObj } from './utils';
 
 const promiseErrorHandler = (promise: Promise<any>, message = '') =>
   promise.catch((err) => {
@@ -207,6 +210,7 @@ export class Reporter {
       // @ts-ignore
       const errorMsg = stripAnsi(this.formatError(testRunInfo.errs[testRunInfo.errs.length - 1]));
       this.sendLogsOnFail(testRunInfo.errs, testItemId);
+      this.sendStepsLogsOnFail(testRunInfo.reportData, testItemId);
       descriptionWithError =
         errorMsg && (description || '').concat(`\n\`\`\`error\n${errorMsg}\n\`\`\``);
     }
@@ -252,12 +256,70 @@ export class Reporter {
 
   sendLogsOnFail(errors: Record<string, unknown>[], testItemId: string): void {
     errors.forEach((error: Record<string, unknown>) => {
-      this.client.sendLog(testItemId, {
-        level: LOG_LEVELS.ERROR,
-        // @ts-ignore
-        message: stripAnsi(this.formatError(error)),
-      });
+      this.client.sendLog(
+        testItemId,
+        {
+          level: LOG_LEVELS.ERROR,
+          // @ts-ignore
+          message: stripAnsi(this.formatError(error)),
+        },
+        {
+          name: nodePath.basename(error.screenshotPath as string),
+          type: FILE_TYPES.PNG,
+          content: fs.readFileSync(error.screenshotPath as string),
+        },
+      );
     });
+  }
+
+  sendStepsLogsOnFail(
+    reportData: { [key: string]: TestCafeReportDataItem[] },
+    testItemId: string,
+  ): void {
+    const data: TestCafeReportDataItem[] = Object.values(reportData)[0];
+    if (data) {
+      // Extract test steps
+      const stepsParents: Map<string, string> = new Map();
+      const steps = data.filter((i) => i.stepReportPortal).map((i) => i.stepReportPortal);
+
+      steps
+        .sort((a, b) => a.startTime - b.startTime)
+        .forEach((step) => {
+          const startTestObj: StartTestItemRQ = {
+            name: step.title,
+            type: TEST_ITEM_TYPES.STEP,
+            hasStats: false,
+            startTime: step.startTime,
+          };
+          const parentId = !step.parentId ? testItemId : stepsParents.get(step.parentId);
+
+          const { tempId, promise: startPromise } = this.client.startTestItem(
+            startTestObj,
+            this.launchId,
+            parentId,
+          );
+
+          stepsParents.set(step.id, tempId);
+
+          this.addRequestToPromisesQueue(startPromise, 'Failed to start step.');
+        });
+
+      steps
+        .sort((a, b) => a.finishTime - b.finishTime)
+        .forEach((step) => {
+          const stepFinishObj = {
+            status: step.status,
+            endTime: step.finishTime,
+          };
+
+          const { promise: finishPromise } = this.client.finishTestItem(
+            stepsParents.get(step.id),
+            stepFinishObj,
+          );
+
+          this.addRequestToPromisesQueue(finishPromise, 'Failed to finish nested step.');
+        });
+    }
   }
 
   setLaunchStatus(status: string): void {

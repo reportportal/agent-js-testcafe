@@ -15,8 +15,8 @@
  *
  */
 
-import { TEST_ITEM_TYPES, FILE_TYPES, LAUNCH_MODES, LOG_LEVELS } from '../constants';
-import { RPItemStartRQ, RPItemFinishRQ, Parameter, Issue } from './common';
+import { FILE_TYPES, LAUNCH_MODES, LOG_LEVELS, STATUSES, TEST_ITEM_TYPES } from '../constants';
+import { Issue, Parameter, RPItemFinishRQ, RPItemStartRQ } from './common';
 
 export interface StartTestItemRQ extends RPItemStartRQ {
   name: string;
@@ -59,4 +59,26 @@ export interface LogRQ {
   message?: string;
   time?: number;
   file?: Attachment;
+}
+
+export interface TestCafeReportDataItem {
+  stepReportPortal?: TestCafeStepDefinition;
+  browserNetwork?: BrowserNetworkInfo[];
+  browserConsole?: string[];
+}
+
+export interface TestCafeStepDefinition {
+  id: string;
+  startTime: number;
+  finishTime: number;
+  title: string;
+  status: STATUSES.FAILED | STATUSES.PASSED;
+  parentId: string | null;
+}
+
+export interface BrowserNetworkInfo {
+  url: string;
+  method: string;
+  status: number;
+  responseBody: any;
 }

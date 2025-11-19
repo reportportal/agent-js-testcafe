@@ -33,6 +33,7 @@ module.exports = {
   },
   globals: {
     'ts-jest': {
+      tsconfig: 'tsconfig.test.json',
       diagnostics: {
         pathRegex: '(/__tests__/.*?\\.(test|spec))\\.(ts|js)$',
       },

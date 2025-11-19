@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": [
+      "es2016",
+      "es2016.array.include"
+    ],
+    "types": [
+      "jest"
+    ],
+    "declaration": false,
+    "declarationMap": false
+  },
+  "include": [
+    "./src/__tests__/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
